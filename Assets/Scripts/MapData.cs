@@ -25,8 +25,17 @@ public class MapData
     public enum Direction { Up, Right, Down, Left }
     private static Vector2Int[] directionDictionary;
 
-    public enum BlockAction { None, Up, Right, Down, Left, Break }
-    public BlockAction[,] BlockActions;
+    // MicroHistory is to store data about what happens in each execution of game logic within a turn
+    public class MicroHistory
+    {
+        public bool[,] Moved, Broke;
+        public MicroHistory(Vector2Int Size)
+        {
+            Moved = new bool[Size.x, Size.y];
+            Broke = new bool[Size.x, Size.y];
+        }
+    }
+    public Queue<MicroHistory> TurnHistory { get; private set; }
 
 
     static MapData()
@@ -106,7 +115,7 @@ public class MapData
 
     public bool Move(Direction direction)
     {
-        BlockActions = new BlockAction[Size.x, Size.y];
+        TurnHistory = new Queue<MicroHistory>();
         Vector2Int targetPosition = Player + directionDictionary[(int)direction];
         if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y]) return false;
 
