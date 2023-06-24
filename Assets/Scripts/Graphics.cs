@@ -107,7 +107,7 @@ public class Graphics : MonoBehaviour
             // load all sprites
             optionBox = LoadSprites("Option Box", 3);
             player = LoadSprites("Player", 2);
-            tile = LoadSprites("Tile", 5);
+            tile = LoadSprites("Tile", 12);
             arrow = LoadSprites("Arrow", 4);
             checkbox = LoadSprites("Checkbox", 4);
             plainWhite = LoadSprite("Plain White");
