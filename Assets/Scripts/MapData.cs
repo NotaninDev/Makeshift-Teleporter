@@ -19,10 +19,14 @@ public class MapData
 
     public bool[,] Walls;
 
-    public MicroHistory TurnHistory { get; private set; }
+    public enum BlockShape { None, End, Up, Right, UpRight }
+    public BlockShape[,] BlockShapes;
 
     public enum Direction { Up, Right, Down, Left }
     private static Vector2Int[] directionDictionary;
+
+    public enum BlockAction { None, Up, Right, Down, Left, Break }
+    public BlockAction[,] BlockActions;
 
 
     static MapData()
@@ -45,6 +49,7 @@ public class MapData
                     Player = new Vector2Int(6, 2);
                     Target = new Vector2Int(0, 5);
                     Walls = new bool[Size.x, Size.y];
+                    BlockShapes = new BlockShape[Size.x, Size.y];
                     for (int i = 1; i < 2; i++)
                     {
                         for (int j = 1; j < 5; j++)
@@ -64,6 +69,7 @@ public class MapData
                     Player = new Vector2Int(3, 1);
                     Target = new Vector2Int(7, 0);
                     Walls = new bool[Size.x, Size.y];
+                    BlockShapes = new BlockShape[Size.x, Size.y];
                     for (int i = 4; i < 7; i++)
                     {
                         for (int j = 1; j < 3; j++)
@@ -74,6 +80,7 @@ public class MapData
                     break;
             }
         }
+        BlockActions = new BlockAction[Size.x, Size.y];
 
         if (!InMap(Player))
         {
@@ -85,27 +92,24 @@ public class MapData
     {
         MapData clone = (MapData)this.MemberwiseClone();
         clone.Walls = (bool[,])Walls.Clone();
+        clone.BlockShapes = (BlockShape[,])BlockShapes.Clone();
+        clone.BlockActions = (BlockAction[,])BlockActions.Clone();
         return clone;
     }
     public void Reset(MapData initialState)
     {
         Player = initialState.Player;
+        BlockShapes = (BlockShape[,])initialState.BlockShapes.Clone();
+        BlockActions = new BlockAction[Size.x, Size.y];
     }
     public bool Win()
     {
         return Player == Target;
     }
 
-    // MicroHistory is to store data about what happens in each execution of game logic within a turn
-    public class MicroHistory
-    {
-        public MicroHistory()
-        { }
-    }
-
     public bool Move(Direction direction)
     {
-        TurnHistory = new MicroHistory();
+        BlockActions = new BlockAction[Size.x, Size.y];
         Vector2Int targetPosition = Player + directionDictionary[(int)direction];
         if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y]) return false;
 
@@ -206,6 +210,7 @@ public class MapData
         {
             Size = tempVector2;
             Walls = new bool[Size.x, Size.y];
+            BlockShapes = new BlockShape[Size.x, Size.y];
         }
         else
         {
