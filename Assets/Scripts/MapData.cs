@@ -19,7 +19,7 @@ public class MapData
 
     public bool[,] Walls;
 
-    public enum BlockShape { None, End, Up, Right, UpRight }
+    public enum BlockShape { None, End, Up, Right, UpRight, Crumb }
     public BlockShape[,] BlockShapes;
 
     public enum Direction { Up, Right, Down, Left }
@@ -80,7 +80,6 @@ public class MapData
                     break;
             }
         }
-        BlockActions = new BlockAction[Size.x, Size.y];
 
         if (!InMap(Player))
         {
@@ -93,14 +92,12 @@ public class MapData
         MapData clone = (MapData)this.MemberwiseClone();
         clone.Walls = (bool[,])Walls.Clone();
         clone.BlockShapes = (BlockShape[,])BlockShapes.Clone();
-        clone.BlockActions = (BlockAction[,])BlockActions.Clone();
         return clone;
     }
     public void Reset(MapData initialState)
     {
         Player = initialState.Player;
         BlockShapes = (BlockShape[,])initialState.BlockShapes.Clone();
-        BlockActions = new BlockAction[Size.x, Size.y];
     }
     public bool Win()
     {
@@ -114,6 +111,13 @@ public class MapData
         if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y]) return false;
 
         Player = targetPosition;
+        for (int i = 0; i < Size.x; i++)
+        {
+            for (int j = 0; j < Size.y; j++)
+            {
+                if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
+            }
+        }
         return true;
     }
     public bool InMap(Vector2Int coordinates)
