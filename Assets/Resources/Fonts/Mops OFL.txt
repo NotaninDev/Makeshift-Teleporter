@@ -1,0 +1,29 @@
+FONTLOG.txt for Mops Antiqua AKA Pug Serif
+
+OFL Open Font License
+http://scripts.sil.org/OFL
+
+Deutsch: Mops Antiqua - Eine Speisekarten-Schrift
+English: Pug Serif - A Menu Typeface
+
+Uwe Borchert
+
+ChangeLog
+
+26.06.2013 Version 1.3
+- manual width, minimal kerning table, kerning by classes
+- changed german letter sharp s to oldstyle longs+z-ligatur
+- added a few letters for eastern european languages
+
+09.11.2010 Version 1.2
+- added U+2113 SCRIPT SMALL L (liter)
+- added longs+t and s+t ligature
+- adjusted kerning (incl. accented letters)
+
+14.10.2010 Version 1.1
+- adjusted Kerning
+- changes width B, o, G
+- changed letters q, W, k, G
+
+09.09.2010 Version 1.0
+- Released as "Mops Antiqua Version 1.0"

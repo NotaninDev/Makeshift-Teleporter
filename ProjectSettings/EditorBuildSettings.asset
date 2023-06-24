@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!1045 &1
+EditorBuildSettings:
+  m_ObjectHideFlags: 0
+  serializedVersion: 2
+  m_Scenes:
+  - enabled: 1
+    path: Assets/Scenes/BorderScene.unity
+    guid: a766e84362a974945aeddb7509d16047
+  - enabled: 1
+    path: Assets/Scenes/TitleScene.unity
+    guid: f8b1a92281bd89c468270c115d568ef1
+  - enabled: 1
+    path: Assets/Scenes/MainScene.unity
+    guid: af2f0a548345400448e4256e9cb1a8aa
+  m_configObjects:
+    com.unity.addressableassets: {fileID: 11400000, guid: c43d3d1d36760f04a9ea95017049cbbb,
+      type: 2}
