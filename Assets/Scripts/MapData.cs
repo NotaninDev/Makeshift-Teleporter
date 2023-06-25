@@ -126,6 +126,18 @@ public class MapData
             if (GroupIsBlocked(group, direction))
             {
                 // check if player can get out
+                if (!HasBlock(targetPosition))
+                {
+                    Player = targetPosition;
+                    for (int i = 0; i < Size.x; i++)
+                    {
+                        for (int j = 0; j < Size.y; j++)
+                        {
+                            if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
+                        }
+                    }
+                    return true;
+                }
             }
             else
             {
