@@ -27,6 +27,7 @@ public class Block : MonoBehaviour
     {
         blockSprite.Initialize(Graphics.tile[5], "Tile", 2, Vector3.zero);
         bubbleSprite.Initialize(Graphics.tile[10], "Tile", 3, Vector3.zero);
+        blockSprite.spriteRenderer.color = Graphics.SemiTransparent;
 
         if (up) InitializeFrame(0);
         else Destroy(frameObjects[0]);
