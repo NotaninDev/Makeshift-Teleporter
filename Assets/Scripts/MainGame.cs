@@ -385,6 +385,16 @@ public class MainGame : MonoBehaviour
     private static void RegisterHistory(MapData oldMap, MapData newMap)
     {
         History.AddHistory(History.Type.Player, oldMap.Player);
+        for (int i = 0; i < newMap.Size.x; i++)
+        {
+            for (int j = 0; j < newMap.Size.y; j++)
+            {
+                if (oldMap.BlockShapes[i, j] != newMap.BlockShapes[i, j])
+                {
+                    History.AddHistory(History.Type.Block, new Vector2Int(i, j), oldMap.BlockShapes[i, j]);
+                }
+            }
+        }
     }
     public static void RollBack(History.HistoryUnit unit)
     {
