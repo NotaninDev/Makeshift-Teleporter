@@ -247,10 +247,10 @@ public class MapData
             Vector2Int targetPosition = coordinates + directionDictionary[(int)direction];
             if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y] || HasBlock(targetPosition) && !inGroup[targetPosition.x, targetPosition.y])
             {
-                return false;
+                return true;
             }
         }
-        return true;
+        return false;
     }
 
     public static void LoadLevelNames()
