@@ -19,8 +19,43 @@ public class MapData
 
     public bool[,] Walls;
 
-    public enum BlockShape { None, Corner, Up, Right, UpRight, Crumb }
-    public BlockShape[,] BlockShapes;
+    public enum BlockType { None, Block, Crumb }
+    public BlockType[,] Blocks;
+    public int[,] BlockConnection;
+    public static int EncodeConnection(bool[] connected)
+    {
+        if (connected.Length != 4)
+        {
+            Debug.LogWarning($"MapData.EncodeConnection: connected is length {connected.Length}");
+            return 0;
+        }
+        int code = 0;
+        for (int i = 0; i < connected.Length; i++)
+        {
+            code <<= 1;
+            code |= connected[i] ? 1 : 0;
+        }
+        return code;
+    }
+    public static int EncodeConnection(bool up, bool right, bool down, bool left)
+    {
+        bool[] connected = new bool[4];
+        connected[0] = up;
+        connected[1] = right;
+        connected[2] = down;
+        connected[3] = left;
+        return EncodeConnection(connected);
+    }
+    public static bool[] DecodeConnection(int code)
+    {
+        bool[] connected = new bool[4];
+        for (int i = 3; i >= 0; i--)
+        {
+            connected[i] = (code & 1) != 0;
+            code >>= 1;
+        }
+        return connected;
+    }
 
     public enum Direction { Up, Right, Down, Left }
     private static Vector2Int[] directionDictionary;
@@ -59,7 +94,8 @@ public class MapData
                     Player = new Vector2Int(6, 2);
                     Target = new Vector2Int(0, 5);
                     Walls = new bool[Size.x, Size.y];
-                    BlockShapes = new BlockShape[Size.x, Size.y];
+                    Blocks = new BlockType[Size.x, Size.y];
+                    BlockConnection = new int[Size.x, Size.y];
                     for (int i = 1; i < 2; i++)
                     {
                         for (int j = 1; j < 5; j++)
@@ -79,7 +115,8 @@ public class MapData
                     Player = new Vector2Int(3, 1);
                     Target = new Vector2Int(7, 0);
                     Walls = new bool[Size.x, Size.y];
-                    BlockShapes = new BlockShape[Size.x, Size.y];
+                    Blocks = new BlockType[Size.x, Size.y];
+                    BlockConnection = new int[Size.x, Size.y];
                     for (int i = 4; i < 7; i++)
                     {
                         for (int j = 1; j < 3; j++)
@@ -101,13 +138,15 @@ public class MapData
     {
         MapData clone = (MapData)this.MemberwiseClone();
         clone.Walls = (bool[,])Walls.Clone();
-        clone.BlockShapes = (BlockShape[,])BlockShapes.Clone();
+        clone.Blocks = (BlockType[,])Blocks.Clone();
+        clone.BlockConnection = (int[,])BlockConnection.Clone();
         return clone;
     }
     public void Reset(MapData initialState)
     {
         Player = initialState.Player;
-        BlockShapes = (BlockShape[,])initialState.BlockShapes.Clone();
+        Blocks = (BlockType[,])initialState.Blocks.Clone();
+        BlockConnection = (int[,])initialState.BlockConnection.Clone();
     }
     public bool Win()
     {
@@ -136,7 +175,7 @@ public class MapData
                     {
                         for (int j = 0; j < Size.y; j++)
                         {
-                            if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
+                            if (Blocks[i, j] == BlockType.Crumb) Blocks[i, j] = BlockType.None;
                         }
                     }
                     return true;
@@ -146,17 +185,19 @@ public class MapData
             {
                 // move the blocks
                 BlockGroupMoved = true;
-                BlockShape[,] blockBuffer = new BlockShape[Size.x, Size.y];
+                int[,] blockBuffer = new int[Size.x, Size.y];
                 foreach (Vector2Int coordinates in group)
                 {
                     BlockMoved[coordinates.x, coordinates.y] = true;
-                    blockBuffer[coordinates.x, coordinates.y] = BlockShapes[coordinates.x, coordinates.y];
-                    BlockShapes[coordinates.x, coordinates.y] = BlockShape.None;
+                    blockBuffer[coordinates.x, coordinates.y] = BlockConnection[coordinates.x, coordinates.y];
+                    Blocks[coordinates.x, coordinates.y] = BlockType.None;
+                    BlockConnection[coordinates.x, coordinates.y] = 0;
                 }
                 foreach (Vector2Int coordinates in group)
                 {
                     Vector2Int blockTargetPosition = coordinates + directionDictionary[(int)direction];
-                    BlockShapes[blockTargetPosition.x, blockTargetPosition.y] = blockBuffer[coordinates.x, coordinates.y];
+                    Blocks[blockTargetPosition.x, blockTargetPosition.y] = BlockType.Block;
+                    BlockConnection[blockTargetPosition.x, blockTargetPosition.y] = blockBuffer[coordinates.x, coordinates.y];
                 }
 
                 Player = targetPosition;
@@ -164,7 +205,7 @@ public class MapData
                 {
                     for (int j = 0; j < Size.y; j++)
                     {
-                        if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
+                        if (Blocks[i, j] == BlockType.Crumb) Blocks[i, j] = BlockType.None;
                     }
                 }
 
@@ -178,12 +219,16 @@ public class MapData
             {
                 for (int j = 0; j < Size.y; j++)
                 {
-                    if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
+                    if (Blocks[i, j] == BlockType.Crumb) Blocks[i, j] = BlockType.None;
                 }
             }
             return true;
         }
         return false;
+    }
+    public bool InMap(int x, int y)
+    {
+        return x >= 0 && y >= 0 && x < Size.x && y < Size.y;
     }
     public bool InMap(Vector2Int coordinates)
     {
@@ -191,7 +236,7 @@ public class MapData
     }
     public bool HasBlock(int x, int y)
     {
-        return InMap(new Vector2Int(x, y)) && (BlockShapes[x, y] == BlockShape.Corner || BlockShapes[x, y] == BlockShape.Up || BlockShapes[x, y] == BlockShape.Right || BlockShapes[x, y] == BlockShape.UpRight);
+        return InMap(new Vector2Int(x, y)) && Blocks[x, y] == BlockType.Block;
     }
     public bool HasBlock(Vector2Int coordinates)
     {
@@ -204,20 +249,7 @@ public class MapData
         if (!HasBlock(coordinates)) return false;
         int x = coordinates.x,
             y = coordinates.y;
-        switch (direction)
-        {
-            case Direction.Up:
-                return BlockShapes[x, y] == BlockShape.Up || BlockShapes[x, y] == BlockShape.UpRight;
-            case Direction.Right:
-                return BlockShapes[x, y] == BlockShape.Right || BlockShapes[x, y] == BlockShape.UpRight;
-            case Direction.Down:
-                return IsConnected(coordinates + Vector2Int.down, Direction.Up);
-            case Direction.Left:
-                return IsConnected(coordinates + Vector2Int.left, Direction.Right);
-            default:
-                Debug.LogWarning($"MapData.IsConnected: not implemented for direction {direction}");
-                return false;
-        }
+        return DecodeConnection(BlockConnection[x, y])[(int)direction];
     }
 
     private HashSet<Vector2Int> GetConnectedBlocks(Vector2Int coordinates, out bool[,] used)
@@ -307,6 +339,8 @@ public class MapData
         }
     }
 
+    private enum BlockShape { None, Corner, Up, Right, UpRight }
+
     // load map from a text file
     // returns if loading succeeded
     private bool LoadMapData(string tag)
@@ -347,7 +381,6 @@ public class MapData
         {
             Size = tempVector2;
             Walls = new bool[Size.x, Size.y];
-            BlockShapes = new BlockShape[Size.x, Size.y];
         }
         else
         {
@@ -356,6 +389,8 @@ public class MapData
         }
 
         // read map data
+        BlockShape[,] blockShapes = new BlockShape[Size.x, Size.y];
+        Blocks = new BlockType[Size.x, Size.y];
         for (int j = Size.y - 1; j >= 0; j--)
         {
             line = ReadNonEmptyLine(ref lines, ref count);
@@ -427,7 +462,8 @@ public class MapData
                         break;
 
                     case 'o':
-                        BlockShapes[i, j] = BlockShape.Corner;
+                        Blocks[i, j] = BlockType.Block;
+                        blockShapes[i, j] = BlockShape.Corner;
                         break;
                     case '>':
                         if (i == Size.x - 1)
@@ -435,7 +471,8 @@ public class MapData
                             Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the right most column; line {count} in level {tag}");
                             return false;
                         }
-                        BlockShapes[i, j] = BlockShape.Right;
+                        Blocks[i, j] = BlockType.Block;
+                        blockShapes[i, j] = BlockShape.Right;
                         rightLock = true;
                         break;
                     case '^':
@@ -449,7 +486,8 @@ public class MapData
                             Debug.LogWarning($"LoadMapData: invalid connection \'{c}\' at {i}, {j}; line {count} in level {tag}");
                             return false;
                         }
-                        BlockShapes[i, j] = BlockShape.Up;
+                        Blocks[i, j] = BlockType.Block;
+                        blockShapes[i, j] = BlockShape.Up;
                         break;
                     case 'l':
                         if (i == Size.x - 1)
@@ -467,7 +505,8 @@ public class MapData
                             Debug.LogWarning($"LoadMapData: invalid connection \'{c}\' at {i}, {j}; line {count} in level {tag}");
                             return false;
                         }
-                        BlockShapes[i, j] = BlockShape.UpRight;
+                        Blocks[i, j] = BlockType.Block;
+                        blockShapes[i, j] = BlockShape.UpRight;
                         rightLock = true;
                         break;
 
@@ -478,7 +517,26 @@ public class MapData
             }
         }
 
-        if (playerLoaded && targetLoaded) return true;
+        if (playerLoaded && targetLoaded)
+        {
+            BlockConnection = new int[Size.x, Size.y];
+            for (int i = 0; i < Size.x; i++)
+            {
+                for (int j = 0; j < Size.y; j++)
+                {
+                    if (Blocks[i, j] == BlockType.Block)
+                    {
+                        BlockShape shape = blockShapes[i, j];
+                        bool up = shape == BlockShape.Up || shape == BlockShape.UpRight,
+                            right = shape == BlockShape.Right || shape == BlockShape.UpRight,
+                            down = InMap(i, j - 1) && (blockShapes[i, j - 1] == BlockShape.Up || blockShapes[i, j - 1] == BlockShape.UpRight),
+                            left = InMap(i - 1, j) && (blockShapes[i - 1, j] == BlockShape.Right || blockShapes[i - 1, j] == BlockShape.UpRight);
+                        BlockConnection[i, j] = EncodeConnection(up, right, down, left);
+                    }
+                }
+            }
+            return true;
+        }
         else
         {
             List<string> missingData = new List<String>();

@@ -8,7 +8,7 @@ public class History : MonoBehaviour
     public enum Type
     {
         Player, // position
-        Block, // position, shape
+        Block, // position, type, connection code
         MoveCount,
     }
     public struct HistoryUnit
@@ -17,7 +17,7 @@ public class History : MonoBehaviour
         public int target;
         public Vector2Int position;
         public bool flag;
-        public MapData.BlockShape shape;
+        public MapData.BlockType blockType;
     }
     public static Stack<HistoryUnit> historyTurn = null;
     public static Stack<Stack<HistoryUnit>> history;
@@ -66,7 +66,7 @@ public class History : MonoBehaviour
                 break;
         }
     }
-    public static void AddHistory(Type type, Vector2Int position, MapData.BlockShape shape)
+    public static void AddHistory(Type type, Vector2Int position, MapData.BlockType blockType, int code)
     {
         switch (type)
         {
@@ -74,11 +74,12 @@ public class History : MonoBehaviour
                 HistoryUnit unit = new HistoryUnit();
                 unit.type = type;
                 unit.position = position;
-                unit.shape = shape;
+                unit.blockType = blockType;
+                unit.target = code;
                 historyTurn.Push(unit);
                 break;
             default:
-                Debug.LogWarning(String.Format("AddHistory(Vector2Int, BlockShape): type {0} is invalid", Enum.GetNames(typeof(Type))[(int)type]));
+                Debug.LogWarning(String.Format("AddHistory(Vector2Int, BlockType, int): type {0} is invalid", Enum.GetNames(typeof(Type))[(int)type]));
                 break;
         }
     }

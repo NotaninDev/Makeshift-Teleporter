@@ -389,9 +389,9 @@ public class MainGame : MonoBehaviour
         {
             for (int j = 0; j < newMap.Size.y; j++)
             {
-                if (oldMap.BlockShapes[i, j] != newMap.BlockShapes[i, j])
+                if (oldMap.Blocks[i, j] != newMap.Blocks[i, j] || oldMap.BlockConnection[i, j] != newMap.BlockConnection[i, j])
                 {
-                    History.AddHistory(History.Type.Block, new Vector2Int(i, j), oldMap.BlockShapes[i, j]);
+                    History.AddHistory(History.Type.Block, new Vector2Int(i, j), oldMap.Blocks[i, j], oldMap.BlockConnection[i, j]);
                 }
             }
         }
@@ -405,7 +405,8 @@ public class MainGame : MonoBehaviour
                 map.MovePlayer();
                 break;
             case History.Type.Block:
-                mapData.BlockShapes[unit.position.x, unit.position.y] = unit.shape;
+                mapData.Blocks[unit.position.x, unit.position.y] = unit.blockType;
+                mapData.BlockConnection[unit.position.x, unit.position.y] = unit.target;
                 map.MoveBlock(unit.position.x, unit.position.y);
                 moveCount = unit.target;
                 break;
