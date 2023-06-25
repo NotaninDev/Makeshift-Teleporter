@@ -283,15 +283,35 @@ public class MapData
                 Debug.LogWarning($"LoadMapData: text length {data.Length} at line {count} is wrong for level {tag}");
                 return false;
             }
+            bool rightLock = false;
             for (int i = 0; i < Size.x; i++)
             {
-                switch (Char.ToLower(data[i]))
+                char c = Char.ToLower(data[i]);
+
+                // check if '>' or 'l' is connected to a blcok on the right
+                if (rightLock)
+                {
+                    switch (c)
+                    {
+                        case 'o':
+                        case '>':
+                        case '^':
+                        case 'l':
+                            rightLock = false;
+                            break;
+
+                        default:
+                            Debug.LogWarning($"LoadMapData: invalid connection \'{Char.ToLower(data[i - 1])}\' at {i - 1}, {j}; line {count} in level {tag}");
+                            return false;
+                    }
+                }
+
+                switch (c)
                 {
                     case '#':
                         Walls[i, j] = true;
                         break;
                     case '.':
-                        Walls[i, j] = false;
                         break;
                     case 'p':
                         if (playerLoaded)
@@ -299,7 +319,6 @@ public class MapData
                             Debug.LogWarning($"LoadMapData: player is defined twice; line {count} in level {tag}");
                             return false;
                         }
-                        Walls[i, j] = false;
                         Player = new Vector2Int(i, j);
                         playerLoaded = true;
                         break;
@@ -309,12 +328,57 @@ public class MapData
                             Debug.LogWarning($"LoadMapData: target is defined twice; line {count} in level {tag}");
                             return false;
                         }
-                        Walls[i, j] = false;
                         Target = new Vector2Int(i, j);
                         targetLoaded = true;
                         break;
+
+                    case 'o':
+                        BlockShapes[i, j] = BlockShape.Corner;
+                        break;
+                    case '>':
+                        if (i == Size.x - 1)
+                        {
+                            Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the right most column; line {count} in level {tag}");
+                            return false;
+                        }
+                        BlockShapes[i, j] = BlockShape.Right;
+                        rightLock = true;
+                        break;
+                    case '^':
+                        if (j == Size.y - 1)
+                        {
+                            Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the top row; line {count} in level {tag}");
+                            return false;
+                        }
+                        if (!HasBlock(i, j + 1))
+                        {
+                            Debug.LogWarning($"LoadMapData: invalid connection \'{c}\' at {i}, {j}; line {count} in level {tag}");
+                            return false;
+                        }
+                        BlockShapes[i, j] = BlockShape.Up;
+                        break;
+                    case 'l':
+                        if (i == Size.x - 1)
+                        {
+                            Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the right most column; line {count} in level {tag}");
+                            return false;
+                        }
+                        if (j == Size.y - 1)
+                        {
+                            Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the top row; line {count} in level {tag}");
+                            return false;
+                        }
+                        if (!HasBlock(i, j + 1))
+                        {
+                            Debug.LogWarning($"LoadMapData: invalid connection \'{c}\' at {i}, {j}; line {count} in level {tag}");
+                            return false;
+                        }
+                        BlockShapes[i, j] = BlockShape.UpRight;
+                        rightLock = true;
+                        break;
+
                     default:
-                        Debug.LogWarning($"LoadMapData: invalid card type \'{data[i]}\' ({Size.y - 1 - j}, {i}) at line {count} in level {tag}");
+                        Debug.LogWarning($"LoadMapData: invalid card type \'{c}\' ({Size.y - 1 - j}, {i}) at line {count} in level {tag}");
                         return false;
                 }
             }

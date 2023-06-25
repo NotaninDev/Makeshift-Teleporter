@@ -1,2 +1,3 @@
 debug: Debug
 debugalpha: Debug Alpha
+debugblock: Debug Block
