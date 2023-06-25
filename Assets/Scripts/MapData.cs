@@ -207,6 +207,7 @@ public class MapData
         {
             Player = targetPosition;
             RemoveCrumbs();
+            while (Teleport()) { }
             return true;
         }
         return false;
@@ -281,6 +282,8 @@ public class MapData
 
     private bool Teleport()
     {
+        if (!HasBlock(Player)) return false;
+
         bool[,] used;
         HashSet<Vector2Int> origin, destination = null;
         origin = GetConnectedBlocks(Player, out used);
