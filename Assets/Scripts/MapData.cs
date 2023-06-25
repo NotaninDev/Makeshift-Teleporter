@@ -119,15 +119,32 @@ public class MapData
         Vector2Int targetPosition = Player + directionDictionary[(int)direction];
         if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y]) return false;
 
-        Player = targetPosition;
-        for (int i = 0; i < Size.x; i++)
+        if (HasBlock(Player))
         {
-            for (int j = 0; j < Size.y; j++)
+            bool[,] used;
+            HashSet<Vector2Int> group = GetConnectedBlocks(Player, out used);
+            if (GroupIsBlocked(group, direction))
             {
-                if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
+                // check if player can get out
+            }
+            else
+            {
+                // move the blocks
             }
         }
-        return true;
+        else
+        {
+            Player = targetPosition;
+            for (int i = 0; i < Size.x; i++)
+            {
+                for (int j = 0; j < Size.y; j++)
+                {
+                    if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
+                }
+            }
+            return true;
+        }
+        return false;
     }
     public bool InMap(Vector2Int coordinates)
     {
@@ -162,6 +179,36 @@ public class MapData
                 Debug.LogWarning($"MapData.IsConnected: not implemented for direction {direction}");
                 return false;
         }
+    }
+
+    private HashSet<Vector2Int> GetConnectedBlocks(Vector2Int coordinates, out bool[,] used)
+    {
+        HashSet<Vector2Int> group = new HashSet<Vector2Int>();
+        used = new bool[Size.x, Size.y];
+        Queue<Vector2Int> unvisited = new Queue<Vector2Int>();
+        unvisited.Enqueue(coordinates);
+
+        while (unvisited.Count > 0)
+        {
+            Vector2Int next = unvisited.Dequeue();
+            group.Add(next);
+            used[next.x, next.y] = true;
+            for (int i = 0; i < 4; i++)
+            {
+                Vector2Int target = next + directionDictionary[i];
+                if (!InMap(target) || used[target.x, target.y]) continue;
+                if (IsConnected(next, (Direction)i))
+                {
+                    unvisited.Enqueue(target);
+                }
+            }
+        }
+        return group;
+    }
+
+    private bool GroupIsBlocked(HashSet<Vector2Int> group, Direction direction)
+    {
+        return true;
     }
 
     public static void LoadLevelNames()
