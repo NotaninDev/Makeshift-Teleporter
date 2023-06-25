@@ -84,6 +84,7 @@ public class Map : MonoBehaviour
                     blocks[coordinates] = blockObject;
                     Block block = blockObject.AddComponent<Block>();
                     block.Initialize(mapData.IsConnected(coordinates, MapData.Direction.Up), mapData.IsConnected(coordinates, MapData.Direction.Right), mapData.IsConnected(coordinates, MapData.Direction.Down), mapData.IsConnected(coordinates, MapData.Direction.Left));
+                    blockObject.transform.localPosition = Get3DPoint(i, j);
                 }
             }
         }
