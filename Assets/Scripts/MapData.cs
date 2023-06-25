@@ -133,9 +133,13 @@ public class MapData
     {
         return coordinates.x >= 0 && coordinates.y >= 0 && coordinates.x < Size.x && coordinates.y < Size.y;
     }
+    public bool HasBlock(int x, int y)
+    {
+        return InMap(new Vector2Int(x, y)) && (BlockShapes[x, y] == BlockShape.Corner || BlockShapes[x, y] == BlockShape.Up || BlockShapes[x, y] == BlockShape.Right || BlockShapes[x, y] == BlockShape.UpRight);
+    }
     public bool HasBlock(Vector2Int coordinates)
     {
-        return InMap(coordinates) && (BlockShapes[coordinates.x, coordinates.y] == BlockShape.Corner || BlockShapes[coordinates.x, coordinates.y] == BlockShape.Up || BlockShapes[coordinates.x, coordinates.y] == BlockShape.Right || BlockShapes[coordinates.x, coordinates.y] == BlockShape.UpRight);
+        return HasBlock(coordinates.x, coordinates.y);
     }
 
     public static void LoadLevelNames()
