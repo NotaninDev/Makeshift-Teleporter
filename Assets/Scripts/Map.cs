@@ -146,7 +146,7 @@ public class Map : MonoBehaviour
             teleportationAnimation = AnimateTeleportation(previousMap, direction);
             StartCoroutine(teleportationAnimation);
         }
-        return stuck ? StuckTime : MoveTime;
+        return stuck ? StuckTime : (MoveTime + TeleportTime * mapData.TurnHistory.Count);
     }
 
     private IEnumerator AnimateStuck()
