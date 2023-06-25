@@ -103,6 +103,13 @@ public class Map : MonoBehaviour
     public void Reset()
     {
         MovePlayer();
+        for (int i = 0; i < mapData.Size.x; i++)
+        {
+            for (int j = 0; j < mapData.Size.y; j++)
+            {
+                MoveBlock(i, j);
+            }
+        }
     }
 
     public float Move(MapData previousMap, MapData.Direction direction)
