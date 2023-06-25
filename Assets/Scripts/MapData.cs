@@ -65,6 +65,7 @@ public class MapData
     public bool[,] BlockMoved;
     public class MicroHistory
     {
+        public Vector2Int JumpPoint { get; set; }
         public bool[,] Broke;
         public MicroHistory(Vector2Int Size)
         {
@@ -197,6 +198,8 @@ public class MapData
                 Player = targetPosition;
                 RemoveCrumbs();
 
+                while (Teleport()) { }
+
                 return true;
             }
         }
@@ -234,7 +237,7 @@ public class MapData
         return DecodeConnection(BlockConnection[x, y])[(int)direction];
     }
 
-    private HashSet<Vector2Int> GetConnectedBlocks(Vector2Int coordinates, out bool[,] used)
+    private HashSet<Vector2Int> GetConnectedBlocks(Vector2Int coordinates, out bool[,] used, bool ignoreFrame = false)
     {
         HashSet<Vector2Int> group = new HashSet<Vector2Int>();
         used = new bool[Size.x, Size.y];
@@ -250,9 +253,13 @@ public class MapData
             {
                 Vector2Int target = next + directionDictionary[i];
                 if (!InMap(target) || used[target.x, target.y]) continue;
-                if (IsConnected(next, (Direction)i))
+                if (ignoreFrame)
                 {
-                    unvisited.Enqueue(target);
+                    if (HasBlock(target)) unvisited.Enqueue(target);
+                }
+                else
+                {
+                    if (IsConnected(next, (Direction)i)) unvisited.Enqueue(target);
                 }
             }
         }
@@ -270,6 +277,68 @@ public class MapData
             }
         }
         return false;
+    }
+
+    private bool Teleport()
+    {
+        bool[,] used;
+        HashSet<Vector2Int> origin, destination = null;
+        origin = GetConnectedBlocks(Player, out used);
+
+        bool foundSameShape = false;
+        for (int i = 0; i < Size.x; i++)
+        {
+            for (int j = 0; j < Size.y; j++)
+            {
+                if (!HasBlock(i, j) || used[i, j]) continue;
+                HashSet<Vector2Int> tempSet = GetConnectedBlocks(new Vector2Int(i, j), out used);
+                if (AreSameShape(origin, tempSet))
+                {
+                    if (foundSameShape) return false;
+                    destination = tempSet;
+                    foundSameShape = true;
+                }
+            }
+        }
+        if (!foundSameShape) return false;
+
+        MicroHistory microHistory = new MicroHistory(Size);
+        Vector2Int bottomLeftOrigin, bottomLeftDestination;
+        bottomLeftOrigin = GetBottomLeft(origin);
+        bottomLeftDestination = GetBottomLeft(destination);
+        microHistory.JumpPoint = Player + (bottomLeftDestination - bottomLeftOrigin);
+        TurnHistory.Enqueue(microHistory);
+        return true;
+    }
+    private bool AreSameShape(HashSet<Vector2Int> shape1, HashSet<Vector2Int> shape2)
+    {
+        if (shape1.Count != shape2.Count) return false;
+        Vector2Int bottomLeft1, bottomLeft2;
+        bottomLeft1 = GetBottomLeft(shape1);
+        bottomLeft2 = GetBottomLeft(shape2);
+
+        // check for identity
+        foreach (Vector2Int coordinates in shape1)
+        {
+            if (!shape2.Contains(coordinates + (bottomLeft2 - bottomLeft1)))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    // Get the bottom left point in shape
+    // Only works if all points of shape are in the map
+    private Vector2Int GetBottomLeft(HashSet<Vector2Int> shape)
+    {
+        int left = Size.x, bottom = Size.y;
+        foreach (Vector2Int coordinates in shape)
+        {
+            if (coordinates.x < left) left = coordinates.x;
+            if (coordinates.y < bottom) bottom = coordinates.y;
+        }
+        return new Vector2Int(left, bottom);
     }
 
     private void RemoveCrumbs()
