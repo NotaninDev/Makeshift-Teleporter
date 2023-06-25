@@ -29,17 +29,19 @@ public class Block : MonoBehaviour
         bubbleSprite.Initialize(Graphics.tile[10], "Tile", 3, Vector3.zero);
         blockSprite.spriteRenderer.color = Graphics.SemiTransparent;
 
-        if (up) InitializeFrame(0);
-        else Destroy(frameObjects[0]);
-        if (right) InitializeFrame(1);
-        else Destroy(frameObjects[1]);
-        if (down) InitializeFrame(2);
-        else Destroy(frameObjects[2]);
-        if (left) InitializeFrame(3);
-        else Destroy(frameObjects[3]);
+        for (int i = 0; i < 4; i++) InitializeFrame(i);
+        SetFrameActive(up, right, down, left);
     }
     private void InitializeFrame(int i)
     {
         frameSprites[i].Initialize(Graphics.tile[6 + i], "Tile", 4, Vector3.zero);
+    }
+
+    public void SetFrameActive(bool up, bool right, bool down, bool left)
+    {
+        frameObjects[0].SetActive(up);
+        frameObjects[1].SetActive(right);
+        frameObjects[2].SetActive(down);
+        frameObjects[3].SetActive(left);
     }
 }

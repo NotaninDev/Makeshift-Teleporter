@@ -162,9 +162,10 @@ public class Map : MonoBehaviour
     }
     public void MoveBlock(int x, int y)
     {
-        //
-        // to do: implement this lol
-        //
+        Vector2Int coordinates = new Vector2Int(x, y);
+        blockObjects[x, y].SetActive(true);
+        Block tempBlock = blockObjects[x, y].GetComponent<Block>();
+        tempBlock.SetFrameActive(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
         blockObjects[x, y].transform.localPosition = Get3DPoint(x, y);
     }
 
