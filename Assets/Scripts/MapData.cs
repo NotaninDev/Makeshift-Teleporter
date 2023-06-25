@@ -19,7 +19,7 @@ public class MapData
 
     public bool[,] Walls;
 
-    public enum BlockShape { None, End, Up, Right, UpRight, Crumb }
+    public enum BlockShape { None, Corner, Up, Right, UpRight, Crumb }
     public BlockShape[,] BlockShapes;
 
     public enum Direction { Up, Right, Down, Left }
