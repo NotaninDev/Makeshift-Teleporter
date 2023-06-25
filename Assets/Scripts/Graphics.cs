@@ -17,8 +17,7 @@ public class Graphics : MonoBehaviour
     private static float width = 0, height = 0;
     public static float Width { get { return width; } }
     public static float Height { get { return height; } }
-    public static Color32 Red, Blue, Brown, LightBrown, DarkBrown, WhiteBrown, BlackBrown, Green, LightGreen, DarkGreen, WhiteGreen,
-        Pink, LightPink, DarkPink, WhitePink, BlackPink, CheckGreen, WhitePurple, White, Gray, DarkGray, SemiTransparent;
+    public static Color32 Blue, Brown, BlackBrown, Green, White;
 
     public const float ScreenRatio = 9f / 16f;
     private static GameObject masterArea;
@@ -81,28 +80,11 @@ public class Graphics : MonoBehaviour
         if (isBorderGraphics)
         {
             // define colors
-            Red = new Color32(236, 62, 118, 255);
             Blue = new Color32(59, 98, 167, 255);
             Brown = new Color32(210, 122, 47, 255);
-            LightBrown = new Color32(209, 161, 116, 255);
-            DarkBrown = new Color32(156, 89, 31, 255);
-            WhiteBrown = new Color32(232, 209, 189, 255);
             BlackBrown = new Color32(64, 43, 24, 255);
             Green = new Color32(66, 128, 34, 255);
-            LightGreen = new Color32(167, 219, 107, 255);
-            DarkGreen = new Color32(62, 114, 36, 255);
-            WhiteGreen = new Color32(195, 224, 162, 255);
-            Pink = new Color32(239, 57, 142, 255);
-            LightPink = new Color32(230, 207, 230, 255);
-            DarkPink = new Color32(196, 125, 196, 255);
-            WhitePink = new Color32(239, 222, 239, 255);
-            BlackPink = new Color32(114, 14, 114, 255);
-            CheckGreen = new Color32(73, 183, 38, 255);
-            WhitePurple = new Color32(173, 131, 201, 255);
             White = new Color32(209, 209, 209, 255);
-            Gray = new Color32(159, 159, 159, 255);
-            DarkGray = new Color32(94, 94, 94, 255);
-            SemiTransparent = new Color32(17, 32, 53, 172);
 
             // load all sprites
             optionBox = LoadSprites("Option Box", 3);
