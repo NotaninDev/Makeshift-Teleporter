@@ -142,6 +142,28 @@ public class MapData
         return HasBlock(coordinates.x, coordinates.y);
     }
 
+    // returns if the block at `coordinates` is connected to the block in `direction`
+    public bool IsConnected(Vector2Int coordinates, Direction direction)
+    {
+        if (!HasBlock(coordinates)) return false;
+        int x = coordinates.x,
+            y = coordinates.y;
+        switch (direction)
+        {
+            case Direction.Up:
+                return BlockShapes[x, y] == BlockShape.Up || BlockShapes[x, y] == BlockShape.UpRight;
+            case Direction.Right:
+                return BlockShapes[x, y] == BlockShape.Right || BlockShapes[x, y] == BlockShape.UpRight;
+            case Direction.Down:
+                return IsConnected(coordinates + Vector2Int.down, Direction.Up);
+            case Direction.Left:
+                return IsConnected(coordinates + Vector2Int.left, Direction.Right);
+            default:
+                Debug.LogWarning($"MapData.IsConnected: not implemented for direction {direction}");
+                return false;
+        }
+    }
+
     public static void LoadLevelNames()
     {
         Match lines = ExtractLines("Maps/level names");
