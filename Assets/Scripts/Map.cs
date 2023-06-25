@@ -83,7 +83,7 @@ public class Map : MonoBehaviour
                     GameObject blockObject = General.AddChild(blockParent, $"Block ({i}, {j})");
                     blocks[coordinates] = blockObject;
                     Block block = blockObject.AddComponent<Block>();
-                    block.Initialize(mapData.IsConnected(coordinates, MapData.Direction.Up), mapData.IsConnected(coordinates, MapData.Direction.Right), mapData.IsConnected(coordinates, MapData.Direction.Down), mapData.IsConnected(coordinates, MapData.Direction.Left));
+                    block.Initialize(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
                     blockObject.transform.localPosition = Get3DPoint(i, j);
                 }
             }
