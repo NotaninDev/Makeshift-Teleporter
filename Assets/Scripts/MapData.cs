@@ -26,7 +26,8 @@ public class MapData
     private static Vector2Int[] directionDictionary;
 
     // MicroHistory is to store data about what happens in each execution of game logic within a turn
-    public bool[,] Moved;
+    public bool BlockGroupMoved { get; private set; }
+    public bool[,] BlockMoved;
     public class MicroHistory
     {
         public bool[,] Broke;
@@ -115,7 +116,8 @@ public class MapData
 
     public bool Move(Direction direction)
     {
-        Moved = new bool[Size.x, Size.y];
+        BlockGroupMoved = false;
+        BlockMoved = new bool[Size.x, Size.y];
         TurnHistory = new Queue<MicroHistory>();
         Vector2Int targetPosition = Player + directionDictionary[(int)direction];
         if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y]) return false;
@@ -143,10 +145,11 @@ public class MapData
             else
             {
                 // move the blocks
+                BlockGroupMoved = true;
                 BlockShape[,] blockBuffer = new BlockShape[Size.x, Size.y];
                 foreach (Vector2Int coordinates in group)
                 {
-                    Moved[coordinates.x, coordinates.y] = true;
+                    BlockMoved[coordinates.x, coordinates.y] = true;
                     blockBuffer[coordinates.x, coordinates.y] = BlockShapes[coordinates.x, coordinates.y];
                     BlockShapes[coordinates.x, coordinates.y] = BlockShape.None;
                 }
