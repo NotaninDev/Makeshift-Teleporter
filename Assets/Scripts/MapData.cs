@@ -167,6 +167,8 @@ public class MapData
                         if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
                     }
                 }
+
+                return true;
             }
         }
         else
