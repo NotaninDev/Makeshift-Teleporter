@@ -123,7 +123,7 @@ public class MapData
         {
             bool[,] used;
             HashSet<Vector2Int> group = GetConnectedBlocks(Player, out used);
-            if (GroupIsBlocked(group, direction))
+            if (GroupIsBlocked(group, direction, used))
             {
                 // check if player can get out
                 if (!HasBlock(targetPosition))
@@ -218,8 +218,16 @@ public class MapData
         return group;
     }
 
-    private bool GroupIsBlocked(HashSet<Vector2Int> group, Direction direction)
+    private bool GroupIsBlocked(HashSet<Vector2Int> group, Direction direction, bool[,] inGroup)
     {
+        foreach (Vector2Int coordinates in group)
+        {
+            Vector2Int targetPosition = coordinates + directionDictionary[(int)direction];
+            if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y] || HasBlock(targetPosition) && !inGroup[targetPosition.x, targetPosition.y])
+            {
+                return false;
+            }
+        }
         return true;
     }
 
