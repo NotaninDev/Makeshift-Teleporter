@@ -12,8 +12,9 @@ public class Map : MonoBehaviour
     public MapData mapData { get; private set; }
     private string levelTag;
 
-    private GameObject playerObject, targetObject, tileParent;
+    private GameObject playerObject, targetObject, tileParent, blockParent;
     private SpriteBox playerSprite, targetSprite;
+    private Dictionary<Vector2Int, GameObject> blocks;
 
     private const float MoveTime = .1f, StuckTime = .1f;
     private const float StuckScale = 1f / StuckTime / StuckTime;
@@ -41,6 +42,8 @@ public class Map : MonoBehaviour
         targetObject = General.AddChild(gameObject, "Target");
         targetSprite = targetObject.AddComponent<SpriteBox>();
         tileParent = General.AddChild(gameObject, "Tile Parent");
+        blockParent = General.AddChild(gameObject, "Block Parent");
+        blocks = new Dictionary<Vector2Int, GameObject>();
     }
 
     public void Initialize(MapData mapData)
@@ -72,6 +75,16 @@ public class Map : MonoBehaviour
                 SpriteBox tileSprite = tileObject.AddComponent<SpriteBox>();
                 tileSprite.Initialize(Graphics.tile[(isWall ? 2 : 0) + ((i + j) % 2)], "Tile", isWall ? -1: -2, Get3DPoint(i, j));
                 tileObject.transform.localScale = Vector3.one * SpriteScale;
+
+                // blocks
+                Vector2Int coordinates = new Vector2Int(i, j);
+                if (mapData.HasBlock(i, j))
+                {
+                    GameObject blockObject = General.AddChild(blockParent, $"Block ({i}, {j})");
+                    blocks[coordinates] = blockObject;
+                    Block block = blockObject.AddComponent<Block>();
+                    block.Initialize(mapData.IsConnected(coordinates, MapData.Direction.Up), mapData.IsConnected(coordinates, MapData.Direction.Right), mapData.IsConnected(coordinates, MapData.Direction.Down), mapData.IsConnected(coordinates, MapData.Direction.Left));
+                }
             }
         }
 
