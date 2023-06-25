@@ -15,6 +15,7 @@ public class Map : MonoBehaviour
     private GameObject playerObject, targetObject, tileParent, blockParent;
     private SpriteBox playerSprite, targetSprite;
     private GameObject[,] blockObjects;
+    private int blockCount;
     private Stack<GameObject> blockPool;
 
     private const float MoveTime = .1f, StuckTime = .1f;
@@ -70,7 +71,7 @@ public class Map : MonoBehaviour
         transform.localPosition = Vector3.zero;
 
         blockObjects = new GameObject[mapData.Size.x, mapData.Size.y];
-        int blockCount = 0;
+        blockCount = 0;
         for (int i = 0; i < mapData.Size.x; i++)
         {
             for (int j = 0; j < mapData.Size.y; j++)
@@ -163,10 +164,40 @@ public class Map : MonoBehaviour
     public void MoveBlock(int x, int y)
     {
         Vector2Int coordinates = new Vector2Int(x, y);
-        blockObjects[x, y].SetActive(true);
-        Block tempBlock = blockObjects[x, y].GetComponent<Block>();
-        tempBlock.SetFrameActive(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
-        blockObjects[x, y].transform.localPosition = Get3DPoint(x, y);
+        if (mapData.HasBlock(x, y))
+        {
+            if (blockObjects[x, y] == null)
+            {
+                if (blockPool.Count > 0)
+                {
+                    blockObjects[x, y] = blockPool.Pop();
+                    blockObjects[x, y].SetActive(true);
+                    Block tempBlock = blockObjects[x, y].GetComponent<Block>();
+                    tempBlock.SetFrameActive(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
+                }
+                else
+                {
+                    blockObjects[x, y] = General.AddChild(blockParent, $"Block {blockCount}");
+                    Block tempBlock = blockObjects[x, y].AddComponent<Block>();
+                    tempBlock.Initialize(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
+                }
+            }
+            else
+            {
+                Block tempBlock = blockObjects[x, y].GetComponent<Block>();
+                tempBlock.Initialize(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
+            }
+            blockObjects[x, y].transform.localPosition = Get3DPoint(x, y);
+        }
+        else
+        {
+            if (blockObjects[x, y] != null)
+            {
+                blockObjects[x, y].SetActive(false);
+                blockPool.Push(blockObjects[x, y]);
+                blockObjects[x, y] = null;
+            }
+        }
     }
 
     public void StopAnimation()
@@ -185,22 +216,7 @@ public class Map : MonoBehaviour
         {
             for (int j = 0; j < mapData.Size.y; j++)
             {
-                if (blockObjects[i, j] != null)
-                {
-                    blockPool.Push(blockObjects[i, j]);
-                    blockObjects[i, j] = null;
-                }
-            }
-        }
-        for (int i = 0; i < mapData.Size.x; i++)
-        {
-            for (int j = 0; j < mapData.Size.y; j++)
-            {
-                if (mapData.HasBlock(i, j))
-                {
-                    blockObjects[i, j] = blockPool.Pop();
-                    MoveBlock(i, j);
-                }
+                MoveBlock(i, j);
             }
         }
     }
