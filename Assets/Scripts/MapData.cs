@@ -133,6 +133,10 @@ public class MapData
     {
         return coordinates.x >= 0 && coordinates.y >= 0 && coordinates.x < Size.x && coordinates.y < Size.y;
     }
+    public bool HasBlock(Vector2Int coordinates)
+    {
+        return InMap(coordinates) && (BlockShapes[coordinates.x, coordinates.y] == BlockShape.Corner || BlockShapes[coordinates.x, coordinates.y] == BlockShape.Up || BlockShapes[coordinates.x, coordinates.y] == BlockShape.Right || BlockShapes[coordinates.x, coordinates.y] == BlockShape.UpRight);
+    }
 
     public static void LoadLevelNames()
     {
