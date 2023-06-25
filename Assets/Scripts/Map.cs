@@ -143,9 +143,9 @@ public class Map : MonoBehaviour
             }
             blockGroupAnimation = Graphics.Move(blockGroupParent, Get3DPoint(previousMap.Player), Get3DPoint(mapData.Player), MoveTime);
             StartCoroutine(blockGroupAnimation);
-            teleportationAnimation = AnimateTeleportation(previousMap, direction);
-            StartCoroutine(teleportationAnimation);
         }
+        teleportationAnimation = AnimateTeleportation(previousMap, direction);
+        StartCoroutine(teleportationAnimation);
         return stuck ? StuckTime : (MoveTime + TeleportTime * mapData.TurnHistory.Count);
     }
 
