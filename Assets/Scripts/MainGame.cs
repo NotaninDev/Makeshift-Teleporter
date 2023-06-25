@@ -394,6 +394,11 @@ public class MainGame : MonoBehaviour
                 mapData.Player = unit.position;
                 map.MovePlayer();
                 break;
+            case History.Type.Block:
+                mapData.BlockShapes[unit.position.x, unit.position.y] = unit.shape;
+                map.MoveBlock(unit.position.x, unit.position.y);
+                moveCount = unit.target;
+                break;
             case History.Type.MoveCount:
                 moveCount = unit.target;
                 break;
