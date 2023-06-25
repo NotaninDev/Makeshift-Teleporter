@@ -171,13 +171,7 @@ public class MapData
                 if (!HasBlock(targetPosition))
                 {
                     Player = targetPosition;
-                    for (int i = 0; i < Size.x; i++)
-                    {
-                        for (int j = 0; j < Size.y; j++)
-                        {
-                            if (Blocks[i, j] == BlockType.Crumb) Blocks[i, j] = BlockType.None;
-                        }
-                    }
+                    RemoveCrumbs();
                     return true;
                 }
             }
@@ -201,13 +195,7 @@ public class MapData
                 }
 
                 Player = targetPosition;
-                for (int i = 0; i < Size.x; i++)
-                {
-                    for (int j = 0; j < Size.y; j++)
-                    {
-                        if (Blocks[i, j] == BlockType.Crumb) Blocks[i, j] = BlockType.None;
-                    }
-                }
+                RemoveCrumbs();
 
                 return true;
             }
@@ -215,13 +203,7 @@ public class MapData
         else
         {
             Player = targetPosition;
-            for (int i = 0; i < Size.x; i++)
-            {
-                for (int j = 0; j < Size.y; j++)
-                {
-                    if (Blocks[i, j] == BlockType.Crumb) Blocks[i, j] = BlockType.None;
-                }
-            }
+            RemoveCrumbs();
             return true;
         }
         return false;
@@ -288,6 +270,17 @@ public class MapData
             }
         }
         return false;
+    }
+
+    private void RemoveCrumbs()
+    {
+        for (int i = 0; i < Size.x; i++)
+        {
+            for (int j = 0; j < Size.y; j++)
+            {
+                if (Blocks[i, j] == BlockType.Crumb) Blocks[i, j] = BlockType.None;
+            }
+        }
     }
 
     public static void LoadLevelNames()
