@@ -378,7 +378,7 @@ public class MapData
                         break;
 
                     default:
-                        Debug.LogWarning($"LoadMapData: invalid card type \'{c}\' ({Size.y - 1 - j}, {i}) at line {count} in level {tag}");
+                        Debug.LogWarning($"LoadMapData: invalid tile type \'{c}\' ({Size.y - 1 - j}, {i}) at line {count} in level {tag}");
                         return false;
                 }
             }
