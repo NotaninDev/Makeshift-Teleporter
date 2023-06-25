@@ -26,12 +26,12 @@ public class MapData
     private static Vector2Int[] directionDictionary;
 
     // MicroHistory is to store data about what happens in each execution of game logic within a turn
+    public bool[,] Moved;
     public class MicroHistory
     {
-        public bool[,] Moved, Broke;
+        public bool[,] Broke;
         public MicroHistory(Vector2Int Size)
         {
-            Moved = new bool[Size.x, Size.y];
             Broke = new bool[Size.x, Size.y];
         }
     }
@@ -115,6 +115,7 @@ public class MapData
 
     public bool Move(Direction direction)
     {
+        Moved = new bool[Size.x, Size.y];
         TurnHistory = new Queue<MicroHistory>();
         Vector2Int targetPosition = Player + directionDictionary[(int)direction];
         if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y]) return false;
@@ -142,6 +143,27 @@ public class MapData
             else
             {
                 // move the blocks
+                BlockShape[,] blockBuffer = new BlockShape[Size.x, Size.y];
+                foreach (Vector2Int coordinates in group)
+                {
+                    Moved[coordinates.x, coordinates.y] = true;
+                    blockBuffer[coordinates.x, coordinates.y] = BlockShapes[coordinates.x, coordinates.y];
+                    BlockShapes[coordinates.x, coordinates.y] = BlockShape.None;
+                }
+                foreach (Vector2Int coordinates in group)
+                {
+                    Vector2Int blockTargetPosition = coordinates + directionDictionary[(int)direction];
+                    BlockShapes[blockTargetPosition.x, blockTargetPosition.y] = blockBuffer[coordinates.x, coordinates.y];
+                }
+
+                Player = targetPosition;
+                for (int i = 0; i < Size.x; i++)
+                {
+                    for (int j = 0; j < Size.y; j++)
+                    {
+                        if (BlockShapes[i, j] == BlockShape.Crumb) BlockShapes[i, j] = BlockShape.None;
+                    }
+                }
             }
         }
         else
