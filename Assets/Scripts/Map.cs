@@ -18,9 +18,9 @@ public class Map : MonoBehaviour
     private int blockCount;
     private Stack<GameObject> blockPool;
 
-    private const float MoveTime = .1f, StuckTime = .1f;
+    private const float MoveTime = .1f, StuckTime = .1f, TeleportTime = .1f;
     private const float StuckScale = 1f / StuckTime / StuckTime;
-    private IEnumerator playerAnimation, blockGroupAnimation;
+    private IEnumerator playerAnimation, blockGroupAnimation, teleportationAnimation;
     private GameObject blockGroupParent;
 
     // Scale is the scale of the map
@@ -143,6 +143,8 @@ public class Map : MonoBehaviour
             }
             blockGroupAnimation = Graphics.Move(blockGroupParent, Get3DPoint(previousMap.Player), Get3DPoint(mapData.Player), MoveTime);
             StartCoroutine(blockGroupAnimation);
+            teleportationAnimation = AnimateTeleportation(previousMap, direction);
+            StartCoroutine(teleportationAnimation);
         }
         return stuck ? StuckTime : MoveTime;
     }
@@ -159,6 +161,80 @@ public class Map : MonoBehaviour
         playerObject.transform.localScale = Vector3.one;
     }
 
+    private IEnumerator AnimateTeleportation(MapData previousMap, MapData.Direction direction)
+    {
+        yield return new WaitForSeconds(MoveTime);
+        while (blockGroupParent.transform.childCount > 0)
+        {
+            blockGroupParent.transform.GetChild(0).SetParent(blockParent.transform);
+        }
+
+        // move blocks in previousMap
+        int[,] blockBuffer = new int[mapData.Size.x, mapData.Size.y];
+        for (int i = 0; i < mapData.Size.x; i++)
+        {
+            for (int j = 0; j < mapData.Size.y; j++)
+            {
+                if (mapData.BlockMoved[i, j])
+                {
+                    blockBuffer[i, j] = previousMap.BlockConnection[i, j];
+                    previousMap.Blocks[i, j] = MapData.BlockType.None;
+                    previousMap.BlockConnection[i, j] = 0;
+                }
+            }
+        }
+        for (int i = 0; i < mapData.Size.x; i++)
+        {
+            for (int j = 0; j < mapData.Size.y; j++)
+            {
+                if (mapData.BlockMoved[i, j])
+                {
+                    Vector2Int blockTargetPosition = new Vector2Int(i, j) + directionDictionary[(int)direction];
+                    previousMap.Blocks[blockTargetPosition.x, blockTargetPosition.y] = MapData.BlockType.Block;
+                    previousMap.BlockConnection[blockTargetPosition.x, blockTargetPosition.y] = blockBuffer[i, j];
+                }
+                MoveBlock(i, j, previousMap);
+            }
+        }
+
+        while (mapData.TurnHistory.Count > 0)
+        {
+            MapData.MicroHistory microHistory = mapData.TurnHistory.Dequeue();
+            playerObject.transform.localPosition = Get3DPoint(microHistory.JumpPoint);
+
+            float start = Time.time;
+            do
+            {
+                for (int i = 0; i < mapData.Size.x; i++)
+                {
+                    for (int j = 0; j < mapData.Size.y; j++)
+                    {
+                        if (microHistory.Broke[i, j])
+                        {
+                            Block brokenBlock = blockObjects[i, j].GetComponent<Block>();
+                            brokenBlock.LerpColor((Time.time - start) / TeleportTime);
+                        }
+                    }
+                }
+                playerObject.transform.localScale = Vector3.one * (1 - .25f * (TeleportTime - (Time.time - start)) / TeleportTime);
+                yield return null;
+            } while (Time.time - start < TeleportTime);
+            for (int i = 0; i < mapData.Size.x; i++)
+            {
+                for (int j = 0; j < mapData.Size.y; j++)
+                {
+                    if (microHistory.Broke[i, j])
+                    {
+                        blockObjects[i, j].SetActive(false);
+                        blockPool.Push(blockObjects[i, j]);
+                        blockObjects[i, j] = null;
+                    }
+                }
+            }
+            playerObject.transform.localScale = Vector3.one;
+        }
+    }
+
     // transform a 2D map point to a 3D world point
     public static Vector3 Get3DPoint(Vector2Int _2dPoint) { return new Vector3(_2dPoint.x, _2dPoint.y, 0) * CellSize + mapOffset; }
     public static Vector3 Get3DPoint(int x, int y) { return new Vector3(x, y, 0) * CellSize + mapOffset; }
@@ -168,9 +244,10 @@ public class Map : MonoBehaviour
         playerObject.transform.localPosition = Get3DPoint(mapData.Player);
         playerObject.transform.localScale = Vector3.one;
     }
-    public void MoveBlock(int x, int y)
+    public void MoveBlock(int x, int y, MapData mapData = null)
     {
         Vector2Int coordinates = new Vector2Int(x, y);
+        if (mapData == null) mapData = this.mapData;
         if (mapData.HasBlock(x, y))
         {
             if (blockObjects[x, y] == null)
@@ -181,6 +258,7 @@ public class Map : MonoBehaviour
                     blockObjects[x, y].SetActive(true);
                     Block tempBlock = blockObjects[x, y].GetComponent<Block>();
                     tempBlock.SetFrameActive(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
+                    tempBlock.LerpColor(0);
                 }
                 else
                 {
@@ -211,6 +289,7 @@ public class Map : MonoBehaviour
     {
         if (playerAnimation != null) StopCoroutine(playerAnimation);
         if (blockGroupAnimation != null) StopCoroutine(blockGroupAnimation);
+        if (teleportationAnimation != null) StopCoroutine(teleportationAnimation);
 
         // update objects' position
         MovePlayer();

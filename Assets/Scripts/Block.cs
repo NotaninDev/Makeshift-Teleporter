@@ -44,4 +44,13 @@ public class Block : MonoBehaviour
         frameObjects[2].SetActive(down);
         frameObjects[3].SetActive(left);
     }
+    public void LerpColor(float t)
+    {
+        blockSprite.spriteRenderer.color = Color32.Lerp(Graphics.SemiTransparent, Graphics.Transparent, t);
+        bubbleSprite.spriteRenderer.color = Color32.Lerp(Color.white, Graphics.Transparent, t);
+        for (int i = 0; i < 4; i++)
+        {
+            frameSprites[i].spriteRenderer.color = Color32.Lerp(Color.white, Graphics.Transparent, t);
+        }
+    }
 }
