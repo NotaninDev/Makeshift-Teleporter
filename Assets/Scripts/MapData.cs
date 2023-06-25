@@ -164,8 +164,8 @@ public class MapData
 
         if (HasBlock(Player))
         {
-            bool[,] used;
-            HashSet<Vector2Int> group = GetConnectedBlocks(Player, out used);
+            bool[,] used = new bool[Size.x, Size.y];
+            HashSet<Vector2Int> group = GetConnectedBlocks(Player, used);
             if (GroupIsBlocked(group, direction, used))
             {
                 // check if player can get out
@@ -198,7 +198,7 @@ public class MapData
                 Player = targetPosition;
                 RemoveCrumbs();
 
-                while (Teleport()) { }
+                while (Teleport()) { break; }
 
                 return true;
             }
@@ -207,7 +207,7 @@ public class MapData
         {
             Player = targetPosition;
             RemoveCrumbs();
-            while (Teleport()) { }
+            while (Teleport()) { break; }
             return true;
         }
         return false;
@@ -238,10 +238,9 @@ public class MapData
         return DecodeConnection(BlockConnection[x, y])[(int)direction];
     }
 
-    private HashSet<Vector2Int> GetConnectedBlocks(Vector2Int coordinates, out bool[,] used, bool ignoreFrame = false)
+    private HashSet<Vector2Int> GetConnectedBlocks(Vector2Int coordinates, bool[,] used, bool ignoreFrame = false)
     {
         HashSet<Vector2Int> group = new HashSet<Vector2Int>();
-        used = new bool[Size.x, Size.y];
         Queue<Vector2Int> unvisited = new Queue<Vector2Int>();
         unvisited.Enqueue(coordinates);
 
@@ -284,9 +283,9 @@ public class MapData
     {
         if (!HasBlock(Player)) return false;
 
-        bool[,] used;
+        bool[,] used = new bool[Size.x, Size.y];
         HashSet<Vector2Int> origin, destination = null;
-        origin = GetConnectedBlocks(Player, out used);
+        origin = GetConnectedBlocks(Player, used, ignoreFrame: true);
 
         bool foundSameShape = false;
         for (int i = 0; i < Size.x; i++)
@@ -294,7 +293,7 @@ public class MapData
             for (int j = 0; j < Size.y; j++)
             {
                 if (!HasBlock(i, j) || used[i, j]) continue;
-                HashSet<Vector2Int> tempSet = GetConnectedBlocks(new Vector2Int(i, j), out used);
+                HashSet<Vector2Int> tempSet = GetConnectedBlocks(new Vector2Int(i, j), used, ignoreFrame: true);
                 if (AreSameShape(origin, tempSet))
                 {
                     if (foundSameShape) return false;
