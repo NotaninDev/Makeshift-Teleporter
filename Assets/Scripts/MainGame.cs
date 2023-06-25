@@ -408,7 +408,6 @@ public class MainGame : MonoBehaviour
                 mapData.Blocks[unit.position.x, unit.position.y] = unit.blockType;
                 mapData.BlockConnection[unit.position.x, unit.position.y] = unit.target;
                 map.MoveBlock(unit.position.x, unit.position.y);
-                moveCount = unit.target;
                 break;
             case History.Type.MoveCount:
                 moveCount = unit.target;
