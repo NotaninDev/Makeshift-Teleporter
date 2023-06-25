@@ -115,7 +115,7 @@ public class Map : MonoBehaviour
     public float Move(MapData previousMap, MapData.Direction direction)
     {
         bool stuck = mapData.Player == previousMap.Player;
-        playerAnimation = stuck ? AnimateStuck() : Graphics.Move(playerObject, Get3DPoint(previousMap.Player), Get3DPoint(mapData.Player), MoveTime);
+        playerAnimation = stuck ? AnimateStuck() : Graphics.Move(playerObject, Get3DPoint(previousMap.Player), Get3DPoint(previousMap.Player + directionDictionary[(int)direction]), MoveTime);
         if (playerAnimation != null) StartCoroutine(playerAnimation);
 
         Dictionary<Vector2Int, GameObject> movedBlockObjects = new Dictionary<Vector2Int, GameObject>();
@@ -141,7 +141,7 @@ public class Map : MonoBehaviour
                     y = pair.Key.y;
                 blockObjects[x, y] = pair.Value;
             }
-            blockGroupAnimation = Graphics.Move(blockGroupParent, Get3DPoint(previousMap.Player), Get3DPoint(mapData.Player), MoveTime);
+            blockGroupAnimation = Graphics.Move(blockGroupParent, Get3DPoint(previousMap.Player), Get3DPoint(previousMap.Player + directionDictionary[(int)direction]), MoveTime);
             StartCoroutine(blockGroupAnimation);
         }
         teleportationAnimation = AnimateTeleportation(previousMap, direction);

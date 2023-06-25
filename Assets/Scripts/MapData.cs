@@ -309,6 +309,7 @@ public class MapData
         bottomLeftOrigin = GetBottomLeft(origin);
         bottomLeftDestination = GetBottomLeft(destination);
         microHistory.JumpPoint = Player + (bottomLeftDestination - bottomLeftOrigin);
+        Player = microHistory.JumpPoint;
         TurnHistory.Enqueue(microHistory);
         return true;
     }
