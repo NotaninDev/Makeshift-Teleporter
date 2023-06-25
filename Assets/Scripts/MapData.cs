@@ -15,7 +15,7 @@ public class MapData
     public string LevelTag { get; private set; }
     public Vector2Int Size { get; private set; }
     public Vector2Int Player { get; set; }
-    public Vector2Int Target { get; set; }
+    public Vector2Int Target { get; private set; }
 
     public bool[,] Walls;
 
