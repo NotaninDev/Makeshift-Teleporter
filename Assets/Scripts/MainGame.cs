@@ -94,8 +94,8 @@ public class MainGame : MonoBehaviour
     void Start()
     {
         for (int i = 0; i < optionCount; i++) optionObjects[i].SetActive(false);
-        options[0].Initialize("Message", 100, Graphics.optionBox[0], 1.2f, 1f, 101, null, Graphics.FontName.Mops,
-            6f, Graphics.Green, new Vector2(.6f, .12f), false, lineSpacing: -6f);
+        options[0].Initialize("Message", 100, null, 1.2f, 1f, 101, null, Graphics.FontName.Mops,
+            5f, Graphics.LightBrown, new Vector2(.6f, .12f), false, lineSpacing: -6f);
         for (int i = 1; i < optionCount; i++)
         {
             options[i].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 5.6f, Graphics.White,
@@ -114,9 +114,7 @@ public class MainGame : MonoBehaviour
         options[0].ChangeText(MapData.GetLevelName(levelTag));
 
         optionObjects[0].SetActive(true);
-        optionObjects[0].transform.localPosition = new Vector3(-8.8f + options[0].Size.x * 1.2f / 2, 5.59f, 0);
-        StartCoroutine(Graphics.SlowDownMove(optionObjects[0], optionObjects[0].transform.localPosition,
-            new Vector3(-8.8f + options[0].Size.x * 1.2f / 2, 4.43f, 0), .6f, .25f, delay: .9f));
+        optionObjects[0].transform.localPosition = new Vector3(-8.8f + options[0].Size.x * 1.2f / 2, -4.57f, 0);
         switch (levelTag)
         {
             case "debug":
