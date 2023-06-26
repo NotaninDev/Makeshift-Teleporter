@@ -161,8 +161,11 @@ public class Map : MonoBehaviour
             teleportationAnimation = AnimateTeleportation(previousMap, direction);
             StartCoroutine(teleportationAnimation);
         }
-        crumbAnimation = AnimateCrumb((MapData.BlockType[,])previousMap.Blocks.Clone());
-        StartCoroutine(crumbAnimation);
+        if (!stuck)
+        {
+            crumbAnimation = AnimateCrumb((MapData.BlockType[,])previousMap.Blocks.Clone());
+            StartCoroutine(crumbAnimation);
+        }
         return stuck ? StuckTime : (MoveTime + TeleportTime * mapData.TurnHistory.Count);
     }
 
