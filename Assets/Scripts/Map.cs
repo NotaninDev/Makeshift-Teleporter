@@ -262,6 +262,7 @@ public class Map : MonoBehaviour
                 }
                 else
                 {
+                    blockCount++;
                     blockObjects[x, y] = General.AddChild(blockParent, $"Block {blockCount}");
                     Block tempBlock = blockObjects[x, y].AddComponent<Block>();
                     tempBlock.Initialize(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
