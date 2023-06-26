@@ -41,7 +41,7 @@ public class MainGame : MonoBehaviour
     private static InputType lastInput;
     private static float lastInputTime;
     private const float UndoInterval = .1f, FirstIntervalRate = 3f;
-    private static bool secondUndo, inputInterrupted, canMove;
+    private static bool secondUndo, inputInterrupted, canMove, teleported;
     private static IEnumerator waiting;
 
     private const int optionCount = 5;
@@ -87,6 +87,7 @@ public class MainGame : MonoBehaviour
         secondUndo = true;
         inputInterrupted = false;
         canMove = true;
+        teleported = false;
         mainEvent = new UnityEvent();
         mainEvent.AddListener(ChangeState);
     }
@@ -161,6 +162,12 @@ public class MainGame : MonoBehaviour
             case GameState.Ready:
                 if (shadowObject.activeInHierarchy) break;
                 float wait = -1;
+                inputInterrupted |= teleported;
+                if (teleported)
+                {
+                    lastInput = InputType.None;
+                    teleported = false;
+                }
 
                 // reset
                 if (!noMoreInput && Keyboard.GetReset() && moveCount > 0)
@@ -202,7 +209,7 @@ public class MainGame : MonoBehaviour
                 if (!noMoreInput && (Keyboard.GetPlayerUp(pressedDown: true) || Keyboard.GetPlayerUp(pressedDown: false) && !inputInterrupted && lastInput == InputType.Up && canMove))
                 {
                     MapData tempMap = mapData.Clone();
-                    canMove = mapData.Move(MapData.Direction.Up);
+                    canMove = mapData.Move(MapData.Direction.Up, out teleported);
                     if (canMove)
                     {
                         moveCount++;
@@ -223,7 +230,7 @@ public class MainGame : MonoBehaviour
                 if (!noMoreInput && (Keyboard.GetPlayerRight(pressedDown: true) || Keyboard.GetPlayerRight(pressedDown: false) && !inputInterrupted && lastInput == InputType.Right && canMove))
                 {
                     MapData tempMap = mapData.Clone();
-                    canMove = mapData.Move(MapData.Direction.Right);
+                    canMove = mapData.Move(MapData.Direction.Right, out teleported);
                     if (canMove)
                     {
                         moveCount++;
@@ -244,7 +251,7 @@ public class MainGame : MonoBehaviour
                 if (!noMoreInput && (Keyboard.GetPlayerDown(pressedDown: true) || Keyboard.GetPlayerDown(pressedDown: false) && !inputInterrupted && lastInput == InputType.Down && canMove))
                 {
                     MapData tempMap = mapData.Clone();
-                    canMove = mapData.Move(MapData.Direction.Down);
+                    canMove = mapData.Move(MapData.Direction.Down, out teleported);
                     if (canMove)
                     {
                         moveCount++;
@@ -265,7 +272,7 @@ public class MainGame : MonoBehaviour
                 if (!noMoreInput && (Keyboard.GetPlayerLeft(pressedDown: true) || Keyboard.GetPlayerLeft(pressedDown: false) && !inputInterrupted && lastInput == InputType.Left && canMove))
                 {
                     MapData tempMap = mapData.Clone();
-                    canMove = mapData.Move(MapData.Direction.Left);
+                    canMove = mapData.Move(MapData.Direction.Left, out teleported);
                     if (canMove)
                     {
                         moveCount++;

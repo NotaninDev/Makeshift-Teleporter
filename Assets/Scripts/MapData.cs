@@ -154,11 +154,12 @@ public class MapData
         return Player == Target;
     }
 
-    public bool Move(Direction direction)
+    public bool Move(Direction direction, out bool teleported)
     {
         BlockGroupMoved = false;
         BlockMoved = new bool[Size.x, Size.y];
         TurnHistory = new Queue<MicroHistory>();
+        teleported = false;
         Vector2Int targetPosition = Player + directionDictionary[(int)direction];
         if (!InMap(targetPosition) || Walls[targetPosition.x, targetPosition.y]) return false;
 
@@ -198,7 +199,7 @@ public class MapData
                 Player = targetPosition;
                 RemoveCrumbs();
 
-                while (Teleport()) { }
+                while (Teleport()) { teleported = true; }
 
                 return true;
             }
@@ -207,7 +208,7 @@ public class MapData
         {
             Player = targetPosition;
             RemoveCrumbs();
-            while (Teleport()) { }
+            while (Teleport()) { teleported = true; }
             return true;
         }
         return false;
