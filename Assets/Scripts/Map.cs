@@ -20,6 +20,7 @@ public class Map : MonoBehaviour
 
     private const float MoveTime = .1f, StuckTime = .1f, TeleportTime = .1f;
     private const float StuckScale = 1f / StuckTime / StuckTime;
+    private const float BrokenBlockMaxRotation = 18f, BrokenBlockScaleDiff = .2f;
     private IEnumerator playerAnimation, blockGroupAnimation, teleportationAnimation;
     private GameObject blockGroupParent;
 
@@ -198,16 +199,17 @@ public class Map : MonoBehaviour
                 }
             }
         }
-        for (int i = 0; i < mapData.Size.x; i++)
-        {
-            for (int j = 0; j < mapData.Size.y; j++)
-            {
-                MoveBlock(i, j, previousMap);
-            }
-        }
 
         while (mapData.TurnHistory.Count > 0)
         {
+            for (int i = 0; i < mapData.Size.x; i++)
+            {
+                for (int j = 0; j < mapData.Size.y; j++)
+                {
+                    MoveBlock(i, j, previousMap);
+                }
+            }
+
             MapData.MicroHistory microHistory = mapData.TurnHistory.Dequeue();
             playerObject.transform.localPosition = Get3DPoint(microHistory.JumpPoint);
 
@@ -222,6 +224,8 @@ public class Map : MonoBehaviour
                         {
                             Block brokenBlock = blockObjects[i, j].GetComponent<Block>();
                             brokenBlock.LerpColor((Time.time - start) / TeleportTime);
+                            blockObjects[i, j].transform.localScale = Vector3.one * (1 - BrokenBlockScaleDiff * (Time.time - start) / TeleportTime);
+                            blockObjects[i, j].transform.localEulerAngles = new Vector3(0, 0, BrokenBlockMaxRotation * (Time.time - start) / TeleportTime);
                         }
                     }
                 }
@@ -283,6 +287,8 @@ public class Map : MonoBehaviour
                 tempBlock.Initialize(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
             }
             blockObjects[x, y].transform.localPosition = Get3DPoint(x, y);
+            blockObjects[x, y].transform.localEulerAngles = Vector3.zero;
+            blockObjects[x, y].transform.localScale = Vector3.one;
         }
         else
         {
