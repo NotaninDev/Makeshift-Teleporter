@@ -16,6 +16,7 @@ public class Map : MonoBehaviour
     private SpriteBox playerSprite, targetSprite;
     private GameObject[,] blockObjects;
     private int blockCount;
+    private SpriteBox[,] crumbSprites;
     private Stack<GameObject> blockPool;
 
     private const float MoveTime = .1f, StuckTime = .1f, TeleportTime = .1f;
@@ -73,6 +74,7 @@ public class Map : MonoBehaviour
 
         blockObjects = new GameObject[mapData.Size.x, mapData.Size.y];
         blockCount = 0;
+        crumbSprites = new SpriteBox[mapData.Size.x, mapData.Size.y];
         for (int i = 0; i < mapData.Size.x; i++)
         {
             for (int j = 0; j < mapData.Size.y; j++)
@@ -92,6 +94,15 @@ public class Map : MonoBehaviour
                     Block tempBlock = blockObjects[i, j].AddComponent<Block>();
                     tempBlock.Initialize(!mapData.IsConnected(coordinates, MapData.Direction.Up), !mapData.IsConnected(coordinates, MapData.Direction.Right), !mapData.IsConnected(coordinates, MapData.Direction.Down), !mapData.IsConnected(coordinates, MapData.Direction.Left));
                     blockObjects[i, j].transform.localPosition = Get3DPoint(i, j);
+                }
+
+                // block crumbs
+                if (!isWall)
+                {
+                    GameObject crumbObject = General.AddChild(tileObject, $"Crumb ({i}, {j})");
+                    crumbSprites[i, j] = crumbObject.AddComponent<SpriteBox>();
+                    crumbSprites[i, j].Initialize(Graphics.tile[11], "Tile", 0, Vector3.zero);
+                    crumbObject.SetActive(false);
                 }
             }
         }
@@ -213,6 +224,19 @@ public class Map : MonoBehaviour
             MapData.MicroHistory microHistory = mapData.TurnHistory.Dequeue();
             playerObject.transform.localPosition = Get3DPoint(microHistory.JumpPoint);
 
+            for (int i = 0; i < mapData.Size.x; i++)
+            {
+                for (int j = 0; j < mapData.Size.y; j++)
+                {
+                    if (microHistory.Broke[i, j])
+                    {
+                        previousMap.Blocks[i, j] = MapData.BlockType.Crumb;
+                        previousMap.BlockConnection[i, j] = 0;
+                        SetCrumb(i, j, true);
+                    }
+                }
+            }
+
             float start = Time.time;
             do
             {
@@ -298,6 +322,20 @@ public class Map : MonoBehaviour
                 blockPool.Push(blockObjects[x, y]);
                 blockObjects[x, y] = null;
             }
+        }
+
+        SetCrumb(x, y, mapData.Blocks[x, y] == MapData.BlockType.Crumb);
+    }
+    private void SetCrumb(int x, int y, bool active)
+    {
+        if (crumbSprites[x, y] != null)
+        {
+            if (active)
+            {
+                crumbSprites[x, y].gameObject.SetActive(true);
+                crumbSprites[x, y].spriteRenderer.color = Color.white;
+            }
+            else crumbSprites[x, y].gameObject.SetActive(false);
         }
     }
 
