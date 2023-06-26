@@ -198,7 +198,7 @@ public class MapData
                 Player = targetPosition;
                 RemoveCrumbs();
 
-                while (Teleport()) { break; }
+                while (Teleport()) { }
 
                 return true;
             }
@@ -207,7 +207,7 @@ public class MapData
         {
             Player = targetPosition;
             RemoveCrumbs();
-            while (Teleport()) { break; }
+            while (Teleport()) { }
             return true;
         }
         return false;
@@ -305,6 +305,18 @@ public class MapData
         if (!foundSameShape) return false;
 
         MicroHistory microHistory = new MicroHistory(Size);
+
+        // get blocks that break
+        used = new bool[Size.x, Size.y];
+        HashSet<Vector2Int> originPart;
+        originPart = GetConnectedBlocks(Player, used, ignoreFrame: false);
+        foreach (Vector2Int coordinates in originPart)
+        {
+            microHistory.Broke[coordinates.x, coordinates.y] = true;
+            Blocks[coordinates.x, coordinates.y] = BlockType.Crumb;
+            BlockConnection[coordinates.x, coordinates.y] = 0;
+        }
+
         Vector2Int bottomLeftOrigin, bottomLeftDestination;
         bottomLeftOrigin = GetBottomLeft(origin);
         bottomLeftDestination = GetBottomLeft(destination);
