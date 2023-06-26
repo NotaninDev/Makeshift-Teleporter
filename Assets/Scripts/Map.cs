@@ -22,7 +22,7 @@ public class Map : MonoBehaviour
     private const float MoveTime = .1f, StuckTime = .1f, TeleportTime = .1f;
     private const float StuckScale = 1f / StuckTime / StuckTime;
     private const float BrokenBlockMaxRotation = 18f, BrokenBlockScaleDiff = .2f;
-    private IEnumerator playerAnimation, blockGroupAnimation, teleportationAnimation;
+    private IEnumerator playerAnimation, blockGroupAnimation, teleportationAnimation, crumbAnimation;
     private GameObject blockGroupParent;
 
     // Scale is the scale of the map
@@ -161,6 +161,8 @@ public class Map : MonoBehaviour
             teleportationAnimation = AnimateTeleportation(previousMap, direction);
             StartCoroutine(teleportationAnimation);
         }
+        crumbAnimation = AnimateCrumb((MapData.BlockType[,])previousMap.Blocks.Clone());
+        StartCoroutine(crumbAnimation);
         return stuck ? StuckTime : (MoveTime + TeleportTime * mapData.TurnHistory.Count);
     }
 
@@ -190,6 +192,10 @@ public class Map : MonoBehaviour
         {
             for (int j = 0; j < mapData.Size.y; j++)
             {
+                if (previousMap.Blocks[i, j] == MapData.BlockType.Crumb)
+                {
+                    previousMap.Blocks[i, j] = MapData.BlockType.None;
+                }
                 if (mapData.BlockMoved[i, j])
                 {
                     blockBuffer[i, j] = previousMap.BlockConnection[i, j];
@@ -272,6 +278,37 @@ public class Map : MonoBehaviour
         }
     }
 
+    private IEnumerator AnimateCrumb(MapData.BlockType[,] blocks)
+    {
+        List<Vector2Int> crumbPoints = new List<Vector2Int>();
+        for (int i = 0; i < mapData.Size.x; i++)
+        {
+            for (int j = 0; j < mapData.Size.y; j++)
+            {
+                if (blocks[i, j] == MapData.BlockType.Crumb)
+                {
+                    crumbPoints.Add(new Vector2Int(i, j));
+                    SetCrumb(i, j, true);
+                }
+            }
+        }
+
+        float start = Time.time, opacity;
+        do
+        {
+            opacity = (Time.time - start) / MoveTime;
+            foreach (Vector2Int crumb in crumbPoints)
+            {
+                crumbSprites[crumb.x, crumb.y].spriteRenderer.color = Color32.Lerp(Color.white, Graphics.Transparent, opacity);
+            }
+            yield return null;
+        } while (Time.time - start < StuckTime);
+        foreach (Vector2Int crumb in crumbPoints)
+        {
+            SetCrumb(crumb.x, crumb.y, false);
+        }
+    }
+
     // transform a 2D map point to a 3D world point
     public static Vector3 Get3DPoint(Vector2Int _2dPoint) { return new Vector3(_2dPoint.x, _2dPoint.y, 0) * CellSize + mapOffset; }
     public static Vector3 Get3DPoint(int x, int y) { return new Vector3(x, y, 0) * CellSize + mapOffset; }
@@ -344,6 +381,7 @@ public class Map : MonoBehaviour
         if (playerAnimation != null) StopCoroutine(playerAnimation);
         if (blockGroupAnimation != null) StopCoroutine(blockGroupAnimation);
         if (teleportationAnimation != null) StopCoroutine(teleportationAnimation);
+        if (crumbAnimation != null) StopCoroutine(crumbAnimation);
 
         // update objects' position
         MovePlayer();
