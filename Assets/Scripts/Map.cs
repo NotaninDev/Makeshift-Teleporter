@@ -144,8 +144,11 @@ public class Map : MonoBehaviour
             blockGroupAnimation = Graphics.Move(blockGroupParent, Get3DPoint(previousMap.Player), Get3DPoint(previousMap.Player + directionDictionary[(int)direction]), MoveTime);
             StartCoroutine(blockGroupAnimation);
         }
-        teleportationAnimation = AnimateTeleportation(previousMap, direction);
-        StartCoroutine(teleportationAnimation);
+        if (mapData.TurnHistory.Count > 0)
+        {
+            teleportationAnimation = AnimateTeleportation(previousMap, direction);
+            StartCoroutine(teleportationAnimation);
+        }
         return stuck ? StuckTime : (MoveTime + TeleportTime * mapData.TurnHistory.Count);
     }
 
@@ -193,6 +196,12 @@ public class Map : MonoBehaviour
                     previousMap.Blocks[blockTargetPosition.x, blockTargetPosition.y] = MapData.BlockType.Block;
                     previousMap.BlockConnection[blockTargetPosition.x, blockTargetPosition.y] = blockBuffer[i, j];
                 }
+            }
+        }
+        for (int i = 0; i < mapData.Size.x; i++)
+        {
+            for (int j = 0; j < mapData.Size.y; j++)
+            {
                 MoveBlock(i, j, previousMap);
             }
         }
