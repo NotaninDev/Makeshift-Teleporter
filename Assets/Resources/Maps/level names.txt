@@ -1,4 +1,5 @@
 pocket: Pocket (not unique)
+debugtele: Debug Teleport
 debug: Debug
 debugalpha: Debug Alpha
 debugblock: Debug Block
