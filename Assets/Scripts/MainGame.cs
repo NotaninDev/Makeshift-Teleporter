@@ -24,7 +24,7 @@ public class MainGame : MonoBehaviour
     private static GameObject mapObject;
     public static Map map;
     public static MapData mapData, initialState;
-    public const int LevelCount = 4;
+    public const int LevelCount = 20;
     public const float MoveDuration = .3f;
 
     private static int moveCount, totalMoveCount;
