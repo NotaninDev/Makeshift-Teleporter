@@ -12,7 +12,7 @@ public class Keyboard : MonoBehaviour
     private static KeyCode[] defaultKeys;
     private static KeyCode[,] assinedKeys;
 
-    private const int KeyNumber = 13;
+    private const int KeyNumber = 12;
     private GameObject[] keyTextObjects, keyObjects;
     private TMPUI[] keyTexts;
     private TMPButton[] keys;
@@ -25,7 +25,7 @@ public class Keyboard : MonoBehaviour
     public class Preference
     {
         public KeyCode KeySelect, KeyMenu, KeyUp, KeyLeft, KeyDown, KeyRight,
-            KeyUndo, KeyReset, KeyPlayerUp, KeyPlayerLeft, KeyPlayerDown, KeyPlayerRight, KeyCamera;
+            KeyUndo, KeyReset, KeyPlayerUp, KeyPlayerLeft, KeyPlayerDown, KeyPlayerRight;
         public Preference()
         {
             if (defaultKeys != null && defaultKeys.Length >= KeyNumber)
@@ -42,7 +42,6 @@ public class Keyboard : MonoBehaviour
                 KeyPlayerLeft = defaultKeys[9];
                 KeyPlayerDown = defaultKeys[10];
                 KeyPlayerRight = defaultKeys[11];
-                KeyCamera = defaultKeys[12];
             }
             else
             {
@@ -146,7 +145,6 @@ public class Keyboard : MonoBehaviour
         defaultKeys[9] = KeyCode.LeftArrow;
         defaultKeys[10] = KeyCode.DownArrow;
         defaultKeys[11] = KeyCode.RightArrow;
-        defaultKeys[12] = KeyCode.LeftControl;
         for (int i = 0; i < KeyNumber; i++) assinedKeys[i, 0] = defaultKeys[i];
 
         // load key mapping
@@ -169,7 +167,6 @@ public class Keyboard : MonoBehaviour
                 assinedKeys[9, 0] = preference.KeyPlayerLeft;
                 assinedKeys[10, 0] = preference.KeyPlayerDown;
                 assinedKeys[11, 0] = preference.KeyPlayerRight;
-                assinedKeys[12, 0] = preference.KeyCamera;
             }
             catch (Exception e)
             {
@@ -245,27 +242,26 @@ public class Keyboard : MonoBehaviour
                     case 8:
                     case 9:
                     case 10:
-                    case 11:
                         keys[focus].Focus(false);
                         focus++;
                         keys[focus].Focus(true);
                         return false;
                     case 5:
                         keys[focus].Focus(false);
+                        focus = 12;
+                        keys[focus].Focus(true);
+                        return false;
+                    case 11:
+                        keys[focus].Focus(false);
                         focus = 13;
                         keys[focus].Focus(true);
                         return false;
                     case 12:
                         keys[focus].Focus(false);
-                        focus = 14;
-                        keys[focus].Focus(true);
-                        return false;
-                    case 13:
-                        keys[focus].Focus(false);
                         focus = 0;
                         keys[focus].Focus(true);
                         return false;
-                    case 14:
+                    case 13:
                         keys[focus].Focus(false);
                         focus = 6;
                         keys[focus].Focus(true);
@@ -289,29 +285,28 @@ public class Keyboard : MonoBehaviour
                     case 9:
                     case 10:
                     case 11:
-                    case 12:
                         keys[focus].Focus(false);
                         focus--;
                         keys[focus].Focus(true);
                         return false;
                     case 0:
                         keys[focus].Focus(false);
-                        focus = 13;
+                        focus = 12;
                         keys[focus].Focus(true);
                         return false;
                     case 6:
                         keys[focus].Focus(false);
-                        focus = 14;
+                        focus = 13;
                         keys[focus].Focus(true);
                         return false;
-                    case 13:
+                    case 12:
                         keys[focus].Focus(false);
                         focus = 5;
                         keys[focus].Focus(true);
                         return false;
-                    case 14:
+                    case 13:
                         keys[focus].Focus(false);
-                        focus = 12;
+                        focus = 11;
                         keys[focus].Focus(true);
                         return false;
                     default:
@@ -345,17 +340,12 @@ public class Keyboard : MonoBehaviour
                         return false;
                     case 12:
                         keys[focus].Focus(false);
-                        focus = 5;
+                        focus = 13;
                         keys[focus].Focus(true);
                         return false;
                     case 13:
                         keys[focus].Focus(false);
-                        focus = 14;
-                        keys[focus].Focus(true);
-                        return false;
-                    case 14:
-                        keys[focus].Focus(false);
-                        focus = 13;
+                        focus = 12;
                         keys[focus].Focus(true);
                         return false;
                     default:
@@ -428,7 +418,6 @@ public class Keyboard : MonoBehaviour
                 case 9:
                 case 10:
                 case 11:
-                case 12:
                     for (int i = 0; i < 2; i++)
                     {
                         if (assinedKeys[i, 0] == inputKey || assinedKeys[i, 1] == inputKey)
@@ -480,14 +469,13 @@ public class Keyboard : MonoBehaviour
             case 9:
             case 10:
             case 11:
-            case 12:
                 keys[focus].ChangeText("<color=#402b18>...</color>");
                 waitingInput = true;
                 return false;
-            case 13:
+            case 12:
                 SaveKeyMapping();
                 return true;
-            case 14:
+            case 13:
                 for (int i = 0; i < KeyNumber; i++) AssignKey(i, defaultKeys[i]);
                 return false;
             default:
@@ -511,7 +499,6 @@ public class Keyboard : MonoBehaviour
         preference.KeyPlayerLeft = assinedKeys[9, 0];
         preference.KeyPlayerDown = assinedKeys[10, 0];
         preference.KeyPlayerRight = assinedKeys[11, 0];
-        preference.KeyCamera = assinedKeys[12, 0];
         encodedPreference = JsonUtility.ToJson(preference);
         try
         {
@@ -551,8 +538,6 @@ public class Keyboard : MonoBehaviour
                 return "Player Down";
             case 11:
                 return "Player Right";
-            case 12:
-                return "Camera";
             default:
                 Debug.LogWarning(String.Format("GetControlName: not implemented for number {0}", n));
                 return "Error";
@@ -586,8 +571,6 @@ public class Keyboard : MonoBehaviour
                 return 10;
             case "Player Left":
                 return 11;
-            case "Camera":
-                return 12;
             default:
                 return -1;
         }
@@ -1113,11 +1096,6 @@ public class Keyboard : MonoBehaviour
     {
         return pressedDown ? Input.GetKeyDown(assinedKeys[11, 0]) || Input.GetKeyDown(assinedKeys[11, 1]) :
             Input.GetKey(assinedKeys[11, 0]) || Input.GetKey(assinedKeys[11, 1]);
-    }
-    public static bool GetCamera(bool pressedDown = true)
-    {
-        return pressedDown ? Input.GetKeyDown(assinedKeys[12, 0]) || Input.GetKeyDown(assinedKeys[12, 1]) :
-            Input.GetKey(assinedKeys[12, 0]) || Input.GetKey(assinedKeys[12, 1]);
     }
 
     public static bool GetActionKeyPressed()
