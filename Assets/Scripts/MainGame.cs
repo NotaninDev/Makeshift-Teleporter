@@ -122,6 +122,12 @@ public class MainGame : MonoBehaviour
                 optionObjects[1].transform.localPosition = new Vector3(-6.19f, 3.09f, 0);
                 optionObjects[1].SetActive(true);
                 break;
+
+            case "makeo":
+                options[1].ChangeText($"{Keyboard.GetKeyName(6)}: Undo      {Keyboard.GetKeyName(7)}: Reset");
+                optionObjects[1].transform.localPosition = new Vector3(0f, -4.48f, 0);
+                optionObjects[1].SetActive(true);
+                break;
         }
     }
 
