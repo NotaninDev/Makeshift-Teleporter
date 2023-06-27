@@ -107,7 +107,7 @@ public class Map : MonoBehaviour
             }
         }
 
-        playerSprite.Initialize(Graphics.player[0], "Tile", 1, Get3DPoint(mapData.Player.x, mapData.Player.y));
+        playerSprite.Initialize(Graphics.player, "Tile", 1, Get3DPoint(mapData.Player.x, mapData.Player.y));
         targetSprite.Initialize(Graphics.tile[4], "Tile", -1, Get3DPoint(mapData.Target.x, mapData.Target.y));
     }
     // reset the level

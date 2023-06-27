@@ -36,8 +36,8 @@ public class Graphics : MonoBehaviour
         Sniglet
     }
 
-    public static Sprite[] optionBox, player, tile, arrow, checkbox;
-    public static Sprite plainWhite, credits, logo;
+    public static Sprite[] optionBox, tile, arrow, checkbox;
+    public static Sprite plainWhite, player, credits, logo;
     public static Sprite[] backgroundSprites;
 
     public static TMP_FontAsset[] fonts;
@@ -92,11 +92,11 @@ public class Graphics : MonoBehaviour
 
             // load all sprites
             optionBox = LoadSprites("Option Box", 3);
-            player = LoadSprites("Player", 2);
             tile = LoadSprites("Tile", 12);
             arrow = LoadSprites("Arrow", 4);
             checkbox = LoadSprites("Checkbox", 4);
             plainWhite = LoadSprite("Plain White");
+            player = LoadSprite("Player");
             credits = LoadSprite("Credits");
             logo = LoadSprite("Logo");
             backgroundSprites = new Sprite[Enum.GetNames(typeof(Background)).Length];
