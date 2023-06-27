@@ -1,5 +1,6 @@
 // real levels
 pocket3: Pockets
+latch: Latch
 
 // debug levels
 pocket: Pocket (not unique)
