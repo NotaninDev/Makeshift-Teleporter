@@ -1,8 +1,9 @@
 // real levels
-pocket2: Pockets
+pocket3: Pockets
 
 // debug levels
 pocket: Pocket (not unique)
+pocket2: Pockets unused
 debugtele: Debug Teleport
 debug: Debug
 debugalpha: Debug Alpha
