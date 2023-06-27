@@ -98,7 +98,7 @@ public class MainGame : MonoBehaviour
             5f, Graphics.LightBrown, new Vector2(.6f, .12f), false, lineSpacing: -6f);
         for (int i = 1; i < optionCount; i++)
         {
-            options[i].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 5.6f, Graphics.White,
+            options[i].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 6f, Graphics.WhiteBrown,
                 Vector2.zero, false, lineSpacing: -6f, alignment: TextAlignmentOptions.Midline);
         }
         menu.Initialize(shadowObject);
@@ -117,14 +117,10 @@ public class MainGame : MonoBehaviour
         optionObjects[0].transform.localPosition = new Vector3(-8.8f + options[0].Size.x * 1.2f / 2, -4.57f, 0);
         switch (levelTag)
         {
-            case "debug":
-                options[1].ChangeText($"{Keyboard.GetKeyName(8)} {Keyboard.GetKeyName(9)} {Keyboard.GetKeyName(10)} {Keyboard.GetKeyName(11)}: Move");
-                optionObjects[1].transform.localPosition = new Vector3(0f, 4.25f, 0);
+            case "pocket3":
+                options[1].ChangeText($"{Keyboard.GetKeyName(8)} {Keyboard.GetKeyName(9)} {Keyboard.GetKeyName(10)} {Keyboard.GetKeyName(11)}{Environment.NewLine}Move");
+                optionObjects[1].transform.localPosition = new Vector3(-6.19f, 3.09f, 0);
                 optionObjects[1].SetActive(true);
-
-                options[2].ChangeText($"{Keyboard.GetKeyName(6)}: Undo      {Keyboard.GetKeyName(7)}: Reset");
-                optionObjects[2].transform.localPosition = new Vector3(0f, -4.25f, 0);
-                optionObjects[2].SetActive(true);
                 break;
         }
     }

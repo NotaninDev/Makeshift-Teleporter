@@ -17,7 +17,7 @@ public class Graphics : MonoBehaviour
     private static float width = 0, height = 0;
     public static float Width { get { return width; } }
     public static float Height { get { return height; } }
-    public static Color32 Blue, Brown, LightBrown, BlackBrown, Green, White, SemiTransparent, Transparent;
+    public static Color32 Blue, Brown, LightBrown, BlackBrown, WhiteBrown, Green, White, SemiTransparent, Transparent;
 
     public const float ScreenRatio = 9f / 16f;
     private static GameObject masterArea;
@@ -84,6 +84,7 @@ public class Graphics : MonoBehaviour
             Brown = new Color32(210, 122, 47, 255);
             LightBrown = new Color32(119, 104, 56, 255);
             BlackBrown = new Color32(64, 43, 24, 255);
+            WhiteBrown = new Color32(211, 201, 185, 255);
             Green = new Color32(66, 128, 34, 255);
             White = new Color32(209, 209, 209, 255);
             SemiTransparent = new Color32(255, 255, 255, 137);
