@@ -2,6 +2,7 @@
 pocket3: Pockets
 latch: Latch
 makeo: Ring
+deform: Deform
 mousetrap: Mouse Trap
 
 // debug levels
