@@ -44,7 +44,9 @@ public class TitleScreen : MonoBehaviour
     private static GameObject[] checkBoxObjects;
     private static SpriteBox[] checkBoxSprites;
     private static GameObject logoObject;
+    private static GameObject[] logoBlockObjects;
     private static SpriteBox logo;
+    private static Block[] logoBlocks;
 
     private static UnityEvent buttonEvent;
 
@@ -93,6 +95,14 @@ public class TitleScreen : MonoBehaviour
 
         logoObject = General.AddChild(gameObject, "Logo");
         logo = logoObject.AddComponent<SpriteBox>();
+
+        logoBlockObjects = new GameObject[2];
+        logoBlocks = new Block[2];
+        for (int i = 0; i < 2; i++)
+        {
+            logoBlockObjects[i] = General.AddChild(logoObject, $"Logo Block {i}");
+            logoBlocks[i] = logoBlockObjects[i].AddComponent<Block>();
+        }
 
         checkBoxObjects = new GameObject[4];
         checkBoxSprites = new SpriteBox[4];
@@ -159,7 +169,14 @@ public class TitleScreen : MonoBehaviour
         checkBoxObjects[2].transform.localPosition = new Vector3(1.97f, 0, 0);
         checkBoxObjects[2].SetActive(false);
         logo.Initialize(Graphics.logo, "Background", 1, new Vector3(-3.04f, 1.43f, 0));
-        logoObject.transform.localScale = new Vector3(1.44f, 1.44f, 1);
+        logoObject.transform.localScale = new Vector3(1.8f, 1.8f, 1);
+        for (int i = 0; i < 2; i++)
+        {
+            logoBlocks[i].Initialize(true, true, true, true);
+            logoBlockObjects[i].transform.localScale = Vector3.one * .43f;
+        }
+        logoBlockObjects[0].transform.localPosition = new Vector3(-1.92f, -.33f, 0);
+        logoBlockObjects[1].transform.localPosition = new Vector3(1.67f, .41f, 0);
     }
     void Update()
     {
