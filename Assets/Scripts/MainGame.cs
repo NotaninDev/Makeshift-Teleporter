@@ -219,7 +219,7 @@ public class MainGame : MonoBehaviour
                     }
                     if (Keyboard.GetPlayerUp(pressedDown: true) || canMove)
                     {
-                        wait = map.Move(tempMap, MapData.Direction.Up) + .02f;
+                        wait = map.Move(tempMap, MapData.Direction.Up) + .01f;
                         gameState = GameState.Move;
                         lastInput = InputType.Up;
                         noMoreInput = true;
@@ -240,7 +240,7 @@ public class MainGame : MonoBehaviour
                     }
                     if (Keyboard.GetPlayerRight(pressedDown: true) || canMove)
                     {
-                        wait = map.Move(tempMap, MapData.Direction.Right) + .02f;
+                        wait = map.Move(tempMap, MapData.Direction.Right) + .01f;
                         gameState = GameState.Move;
                         lastInput = InputType.Right;
                         noMoreInput = true;
@@ -261,7 +261,7 @@ public class MainGame : MonoBehaviour
                     }
                     if (Keyboard.GetPlayerDown(pressedDown: true) || canMove)
                     {
-                        wait = map.Move(tempMap, MapData.Direction.Down) + .02f;
+                        wait = map.Move(tempMap, MapData.Direction.Down) + .01f;
                         gameState = GameState.Move;
                         lastInput = InputType.Down;
                         noMoreInput = true;
@@ -282,7 +282,7 @@ public class MainGame : MonoBehaviour
                     }
                     if (Keyboard.GetPlayerLeft(pressedDown: true) || canMove)
                     {
-                        wait = map.Move(tempMap, MapData.Direction.Left) + .02f;
+                        wait = map.Move(tempMap, MapData.Direction.Left) + .01f;
                         gameState = GameState.Move;
                         lastInput = InputType.Left;
                         noMoreInput = true;
