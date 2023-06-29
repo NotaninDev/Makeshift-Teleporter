@@ -504,6 +504,10 @@ public class MapData
                         case '>':
                         case '^':
                         case 'l':
+                        case '0':
+                        case '1':
+                        case '2':
+                        case '3':
                             rightLock = false;
                             break;
 
@@ -568,6 +572,90 @@ public class MapData
                         blockShapes[i, j] = BlockShape.Up;
                         break;
                     case 'l':
+                        if (i == Size.x - 1)
+                        {
+                            Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the right most column; line {count} in level {tag}");
+                            return false;
+                        }
+                        if (j == Size.y - 1)
+                        {
+                            Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the top row; line {count} in level {tag}");
+                            return false;
+                        }
+                        if (!HasBlock(i, j + 1))
+                        {
+                            Debug.LogWarning($"LoadMapData: invalid connection \'{c}\' at {i}, {j}; line {count} in level {tag}");
+                            return false;
+                        }
+                        Blocks[i, j] = BlockType.Block;
+                        blockShapes[i, j] = BlockShape.UpRight;
+                        rightLock = true;
+                        break;
+
+                    case '0':
+                        if (targetLoaded)
+                        {
+                            Debug.LogWarning($"LoadMapData: target is defined twice; line {count} in level {tag}");
+                            return false;
+                        }
+                        Target = new Vector2Int(i, j);
+                        targetLoaded = true;
+
+                        Blocks[i, j] = BlockType.Block;
+                        blockShapes[i, j] = BlockShape.Corner;
+                        break;
+
+                    case '1':
+                        if (targetLoaded)
+                        {
+                            Debug.LogWarning($"LoadMapData: target is defined twice; line {count} in level {tag}");
+                            return false;
+                        }
+                        Target = new Vector2Int(i, j);
+                        targetLoaded = true;
+
+                        if (i == Size.x - 1)
+                        {
+                            Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the right most column; line {count} in level {tag}");
+                            return false;
+                        }
+                        Blocks[i, j] = BlockType.Block;
+                        blockShapes[i, j] = BlockShape.Right;
+                        rightLock = true;
+                        break;
+
+                    case '2':
+                        if (targetLoaded)
+                        {
+                            Debug.LogWarning($"LoadMapData: target is defined twice; line {count} in level {tag}");
+                            return false;
+                        }
+                        Target = new Vector2Int(i, j);
+                        targetLoaded = true;
+
+                        if (j == Size.y - 1)
+                        {
+                            Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the top row; line {count} in level {tag}");
+                            return false;
+                        }
+                        if (!HasBlock(i, j + 1))
+                        {
+                            Debug.LogWarning($"LoadMapData: invalid connection \'{c}\' at {i}, {j}; line {count} in level {tag}");
+                            return false;
+                        }
+                        Blocks[i, j] = BlockType.Block;
+                        blockShapes[i, j] = BlockShape.Up;
+                        break;
+
+                    case '3':
+                        if (targetLoaded)
+                        {
+                            Debug.LogWarning($"LoadMapData: target is defined twice; line {count} in level {tag}");
+                            return false;
+                        }
+                        Target = new Vector2Int(i, j);
+                        targetLoaded = true;
+
                         if (i == Size.x - 1)
                         {
                             Debug.LogWarning($"LoadMapData: \'{c}\' can't be at the right most column; line {count} in level {tag}");
