@@ -5,13 +5,13 @@ makeo: Ring
 deform: Deform
 4x4: Four by Four
 mousetrap: Mouse Trap
+fork: Fork
 amalgam: Amalgam
 realdelete: Missing Piece
 
 // debug levels
 pocket: Pocket (not unique)
 pocket2: Pockets unused
-fork: Fork unsolvable
 debugtele: Debug Teleport
 debug: Debug
 debugalpha: Debug Alpha
