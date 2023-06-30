@@ -5,6 +5,7 @@ makeo: Ring
 deform: Deform
 4x4: L
 mousetrap: Mouse Trap
+babystep: Baby Step
 fork: Evolution
 amalgam: Amalgam
 realdelete: Missing Piece
