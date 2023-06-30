@@ -3,7 +3,7 @@ pocket3: Pockets
 latch: Latch
 makeo: Ring
 deform: Deform
-4x4: Four by Four
+4x4: L
 mousetrap: Mouse Trap
 fork: Evolution
 amalgam: Amalgam
