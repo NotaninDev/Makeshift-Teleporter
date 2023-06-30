@@ -114,11 +114,11 @@ public class TitleScreen : MonoBehaviour
     }
     void Start()
     {
-        creditsObject.transform.localPosition = new Vector3(OptionX - .47f, .29f, 0);
-        notanBird.Initialize(Graphics.credits, "UI", 1, new Vector3(3.36f, -0.41f, 0));
+        creditsObject.transform.localPosition = new Vector3(OptionX, .29f, 0);
+        notanBird.Initialize(Graphics.credits, "UI", 1, new Vector3(1.47f, -0.41f, 0));
         notanBird.spriteRenderer.color = Graphics.White;
         notanBirdObject.transform.localScale = Vector3.one * .4f;
-        credits.Initialize("UI", 0, null, 1f, 1f, 1, $"<size=6f>Made by</size>{Environment.NewLine}<pos=3>Ryo \"Notan\" Kurama",
+        credits.Initialize("UI", 0, null, 1f, 1f, 1, $"<size=6f>Made by</size>{Environment.NewLine}<pos=3>Notan",
             Graphics.FontName.Mops, 7.2f, Graphics.White, new Vector2(.6f, .12f), false, alignment: TextAlignmentOptions.Left);
         creditsObject.SetActive(false);
         for (int i = 0; i < buttonCount; i++)
