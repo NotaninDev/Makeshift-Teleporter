@@ -9,6 +9,7 @@ babystep: Baby Step
 mousetrap: Mouse Trap
 fork: Evolution
 realdelete: Missing Piece
+thankyou: Thank You
 
 // debug levels
 pocket: Pocket (not unique)

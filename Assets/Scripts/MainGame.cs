@@ -24,7 +24,7 @@ public class MainGame : MonoBehaviour
     private static GameObject mapObject;
     public static Map map;
     public static MapData mapData, initialState;
-    public const int LevelCount = 20;
+    public const int LevelCount = 10;
     public const float MoveDuration = .3f;
 
     private static int moveCount, totalMoveCount;
@@ -49,6 +49,8 @@ public class MainGame : MonoBehaviour
     private static Option[] options;
     private static GameObject shadowObject;
     private static Menu menu;
+
+    private static GameObject notanBirdObject;
 
     static MainGame()
     {
@@ -96,11 +98,15 @@ public class MainGame : MonoBehaviour
         for (int i = 0; i < optionCount; i++) optionObjects[i].SetActive(false);
         options[0].Initialize("Message", 100, null, 1.2f, 1f, 101, null, Graphics.FontName.Mops,
             5f, Graphics.LightBrown, new Vector2(.6f, .12f), false, lineSpacing: -6f);
-        for (int i = 1; i < optionCount; i++)
+        for (int i = 1; i < optionCount - 2; i++)
         {
             options[i].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 6f, Graphics.WhiteBrown,
                 Vector2.zero, false, lineSpacing: -6f, alignment: TextAlignmentOptions.Midline);
         }
+        options[optionCount - 2].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 12f, Graphics.WhiteBrown,
+            Vector2.zero, false, lineSpacing: -6f, alignment: TextAlignmentOptions.Midline);
+        options[optionCount - 1].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 10f, Graphics.WhiteBrown,
+            Vector2.zero, false, lineSpacing: -6f, alignment: TextAlignmentOptions.Midline);
         menu.Initialize(shadowObject);
         shadowObject.SetActive(false);
 
@@ -127,6 +133,22 @@ public class MainGame : MonoBehaviour
                 options[1].ChangeText($"{Keyboard.GetKeyName(6)}: Undo      {Keyboard.GetKeyName(7)}: Reset");
                 optionObjects[1].transform.localPosition = new Vector3(0f, -3.94f, 0);
                 optionObjects[1].SetActive(true);
+                break;
+
+            case "thankyou":
+                optionObjects[0].SetActive(false);
+                options[optionCount - 2].ChangeText("Thank you for playing!");
+                optionObjects[optionCount - 2].transform.localPosition = new Vector3(0f, 3.44f, 0);
+                optionObjects[optionCount - 2].SetActive(true);
+                options[optionCount - 1].ChangeText("Made by Notan");
+                optionObjects[optionCount - 1].transform.localPosition = new Vector3(0f, -3.44f, 0);
+                optionObjects[optionCount - 1].SetActive(true);
+
+                notanBirdObject = General.AddChild(gameObject, "Notan bird");
+                SpriteBox notanSprite = notanBirdObject.AddComponent<SpriteBox>();
+                notanSprite.Initialize(Graphics.credits, "Message", 0, new Vector3(3.48f, -3.44f, 0));
+                notanSprite.spriteRenderer.color = Graphics.WhiteBrown;
+                notanBirdObject.transform.localScale = Vector3.one * .6f;
                 break;
         }
     }
@@ -350,6 +372,11 @@ public class MainGame : MonoBehaviour
         GameManager.level++;
         if (level < LevelCount)
         {
+            SceneLoader.sceneEvent.Invoke("MainScene");
+        }
+        else if (level == LevelCount)
+        {
+            // level "thankyou"
             SceneLoader.sceneEvent.Invoke("MainScene");
         }
         else
