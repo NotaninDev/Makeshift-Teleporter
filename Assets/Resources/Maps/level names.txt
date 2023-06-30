@@ -3,9 +3,9 @@ pocket3: Pockets
 latch: Latch
 makeo: Ring
 deform: Deform
-// tutorial of excess blocks
 4x4: Four by Four
 mousetrap: Mouse Trap
+amalgam: Amalgam
 realdelete: Missing Piece
 
 // debug levels
