@@ -105,7 +105,7 @@ public class MainGame : MonoBehaviour
         }
         options[optionCount - 2].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 12f, Graphics.WhiteBrown,
             Vector2.zero, false, lineSpacing: -6f, alignment: TextAlignmentOptions.Midline);
-        options[optionCount - 1].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 10f, Graphics.WhiteBrown,
+        options[optionCount - 1].Initialize("Message", 0, null, 1f, 1f, 1, null, Graphics.FontName.Mops, 8.4f, Graphics.WhiteBrown,
             Vector2.zero, false, lineSpacing: -6f, alignment: TextAlignmentOptions.Midline);
         menu.Initialize(shadowObject);
         shadowObject.SetActive(false);
@@ -146,9 +146,9 @@ public class MainGame : MonoBehaviour
 
                 notanBirdObject = General.AddChild(gameObject, "Notan bird");
                 SpriteBox notanSprite = notanBirdObject.AddComponent<SpriteBox>();
-                notanSprite.Initialize(Graphics.credits, "Message", 0, new Vector3(3.48f, -3.44f, 0));
+                notanSprite.Initialize(Graphics.credits, "Message", 0, new Vector3(2.97f, -3.44f, 0));
                 notanSprite.spriteRenderer.color = Graphics.WhiteBrown;
-                notanBirdObject.transform.localScale = Vector3.one * .6f;
+                notanBirdObject.transform.localScale = Vector3.one * .48f;
                 break;
         }
     }
