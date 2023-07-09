@@ -41,7 +41,7 @@ public class Border : MonoBehaviour
         for (int i = 0; i < 4; i++)
         {
             borderRenderer[i].sprite = Graphics.plainWhite;
-            borderRenderer[i].color = Graphics.BlackBrown;
+            borderRenderer[i].color = Graphics.BorderColor;
             borderObject[i].transform.localPosition = new Vector3(((i + 1) % 2 * (1 - i)) * (virtualWidth / 2 + (realWidth - virtualWidth) / 4),
                 (i % 2 * (2 - i)) * (virtualHeight / 2 + (realHeight - virtualHeight) / 4), 0);
             if (i % 2 == 0) { borderObject[i].transform.localScale = new Vector3((realWidth - virtualWidth) / 2 / spriteWidth, realHeight / spriteWidth, 0); }
