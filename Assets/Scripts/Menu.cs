@@ -9,10 +9,10 @@ using String = System.String;
 public class Menu : MonoBehaviour
 {
     private GameObject shadowObject;
-    private enum MenuState { Menu, Controls }
+    private enum MenuState { Menu }
     private MenuState state;
 
-    private const int optionNumber = 3;
+    private const int optionNumber = 2;
     private GameObject[] buttonObjects;
     private TMPButton[] buttons;
     private int focus;
@@ -56,8 +56,7 @@ public class Menu : MonoBehaviour
             buttons[i].Initialize(null, Graphics.Blue, Graphics.Green, Graphics.optionBox[2], Graphics.optionBox[0], new Vector2(.5f, .75f - .12f * i), focusEvent, clickEvent, i);
         }
         buttons[0].ChangeText("Resume");
-        buttons[1].ChangeText("Controls");
-        buttons[2].ChangeText("Return to menu");
+        buttons[1].ChangeText("Return to menu");
 
         shadowObject = shadow;
         state = MenuState.Menu;
@@ -138,15 +137,6 @@ public class Menu : MonoBehaviour
                     return true;
                 }
                 return false;
-            case MenuState.Controls:
-                if (keyMapping.HandleInput())
-                {
-                    keyMappingObject.SetActive(false);
-                    for (int i = 0; i < optionNumber; i++) buttonObjects[i].SetActive(true);
-                    state = MenuState.Menu;
-                    return true;
-                }
-                return false;
             default:
                 Debug.LogWarning($"Menu.HandleInput: not implemented for type {Enum.GetName(typeof(MenuState), state)}");
                 state = MenuState.Menu;
@@ -162,12 +152,6 @@ public class Menu : MonoBehaviour
                 shadowObject.SetActive(false);
                 return;
             case 1:
-                state = MenuState.Controls;
-                keyMappingObject.SetActive(true);
-                keyMapping.ResetPosition();
-                for (int i = 0; i < optionNumber; i++) buttonObjects[i].SetActive(false);
-                return;
-            case 2:
                 shadowObject.SetActive(false);
                 SceneLoader.sceneEvent.Invoke("TitleScene");
                 return;
