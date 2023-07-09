@@ -33,7 +33,7 @@ public class TitleScreen : MonoBehaviour
     private static string[] levelNames;
     private static GameObject[] arrowObjects;
     private static SpriteBox[] arrowSprites;
-    private const int buttonCount = 5, textCount = buttonCount + 2;
+    private const int buttonCount = 3, textCount = buttonCount + 2;
     private static int selectedOption, resolutionIndex;
     private static bool fullscreen;
     private const float OptionX = 4.89f, OptionYTop = 2.31f, OptionInterval = 1.19f;
@@ -41,8 +41,6 @@ public class TitleScreen : MonoBehaviour
     private static GameObject keyMappingObject;
     private static Keyboard keyMapping;
 
-    private static GameObject[] checkBoxObjects;
-    private static SpriteBox[] checkBoxSprites;
     private static GameObject logoObject;
     private static GameObject[] logoBlockObjects;
     private static SpriteBox logo;
@@ -103,12 +101,6 @@ public class TitleScreen : MonoBehaviour
             logoBlockObjects[i] = General.AddChild(logoObject, $"Logo Block {i}");
             logoBlocks[i] = logoBlockObjects[i].AddComponent<Block>();
         }
-
-        checkBoxObjects = new GameObject[4];
-        checkBoxSprites = new SpriteBox[4];
-        checkBoxObjects[2] = General.AddChild(optionObjects[1], "Fullscreen Checkbox");
-        checkBoxObjects[3] = General.AddChild(checkBoxObjects[2], "Check Mark");
-        for (int i = 2; i < 4; i++) checkBoxSprites[i] = checkBoxObjects[i].AddComponent<SpriteBox>();
     }
     void Start()
     {
@@ -147,23 +139,13 @@ public class TitleScreen : MonoBehaviour
 
         options[0].ChangeText("Start");
         options[1].ChangeText("Select level");
-        options[2].ChangeText("Settings");
-        options[3].ChangeText("Credits");
-        options[4].ChangeText("Quit");
+        options[2].ChangeText("Credits");
         selectedOption = 0;
         options[0].SetSelected(true);
         for (int i = 1; i < buttonCount; i++) options[i].SetSelected(false);
 
         StartCoroutine(keyMapping.InitializeNonStatic());
 
-        for (int i = 2; i < 4; i++)
-        {
-            checkBoxSprites[i].Initialize(Graphics.checkbox[i], "UI", i % 2 + 1, Vector3.zero);
-        }
-        checkBoxObjects[2].transform.localScale = new Vector3(.88f, .88f, 1);
-        checkBoxObjects[3].transform.localScale = new Vector3(.71f, .71f, 1);
-        checkBoxObjects[2].transform.localPosition = new Vector3(1.97f, 0, 0);
-        checkBoxObjects[2].SetActive(false);
         logo.Initialize(Graphics.logo, "Background", 1, new Vector3(-3.04f, 1.43f, 0));
         logoObject.transform.localScale = new Vector3(1.8f, 1.8f, 1);
         for (int i = 0; i < 2; i++)
@@ -178,7 +160,7 @@ public class TitleScreen : MonoBehaviour
     {
         if (SceneLoader.Loading) return;
 
-        bool mouseDetected = false, cancelSelected = false;
+        bool mouseDetected = false;
         switch (titleState)
         {
             case TitleState.MainMenu:
@@ -240,36 +222,15 @@ public class TitleScreen : MonoBehaviour
                             titleState = TitleState.LevelSelect;
                             break;
                         case 2:
-                            options[0].ChangeText("Resolution");
-                            options[1].ChangeText("Controls");
                             options[2].ChangeText("Back");
-                            options[2].SetSelected(false);
+                            optionObjects[2].transform.localPosition = new Vector3(OptionX, -1.52f, 0);
                             for (int i = 0; i < buttonCount; i++)
                             {
-                                if (i <= 2) continue;
-                                optionObjects[i].SetActive(false);
-                            }
-                            selectedOption = 0;
-                            options[selectedOption].SetSelected(true);
-                            titleState = TitleState.Settings;
-                            break;
-                        case 3:
-                            options[3].ChangeText("Back");
-                            optionObjects[3].transform.localPosition = new Vector3(OptionX, -1.52f, 0);
-                            for (int i = 0; i < buttonCount; i++)
-                            {
-                                if (i == 3) continue;
+                                if (i == 2) continue;
                                 optionObjects[i].SetActive(false);
                             }
                             creditsObject.SetActive(true);
                             titleState = TitleState.Credits;
-                            break;
-                        case 4:
-#if UNITY_EDITOR
-                                EditorApplication.isPlaying = false;
-#else
-                            Application.Quit();
-#endif
                             break;
                     }
                 }
@@ -318,256 +279,11 @@ public class TitleScreen : MonoBehaviour
                     SceneLoader.sceneEvent.Invoke("MainScene");
                 }
                 break;
-            case TitleState.Settings:
-                for (int i = 0; i < 3; i++)
-                {
-                    if (options[i].Mouse.GetMouseEnter())
-                    {
-                        mouseDetected = true;
-                        options[selectedOption].SetSelected(false);
-                        selectedOption = i;
-                        options[selectedOption].SetSelected(true);
-                        break;
-                    }
-                }
-                if (mouseDetected) break;
-                if (Keyboard.GetDown())
-                {
-                    options[selectedOption].SetSelected(false);
-                    selectedOption++;
-                    if (selectedOption >= 3) selectedOption = 0;
-                    options[selectedOption].SetSelected(true);
-                }
-                else if (Keyboard.GetUp())
-                {
-                    options[selectedOption].SetSelected(false);
-                    selectedOption--;
-                    if (selectedOption < 0) selectedOption = 2;
-                    options[selectedOption].SetSelected(true);
-                }
-                else if (Keyboard.GetSelect() || options[selectedOption].Mouse.GetMouseClick())
-                {
-                    switch (selectedOption)
-                    {
-                        case 0:
-                            // initialize the resolution option
-                            resolutionIndex = -1;
-                            Resolution[] resolutions = Screen.resolutions;
-                            for (int i = 0; i < resolutions.Length; i++)
-                            {
-                                if (Screen.currentResolution.width == resolutions[i].width &&
-                                    Screen.currentResolution.height == resolutions[i].height &&
-                                    Screen.currentResolution.refreshRateRatio.value == resolutions[i].refreshRateRatio.value)
-                                {
-                                    resolutionIndex = i;
-                                    break;
-                                }
-                            }
-                            if (resolutionIndex < 0) resolutionIndex = 0;
-                            arrowObjects[2].SetActive(true);
-                            arrowObjects[3].SetActive(true);
-                            options[0].ChangeTextBoxSize(new Vector2(3.6f, .6f), true);
-                            SetResolutionText(resolutionIndex);
-
-                            // initialize the fullscreen option
-                            fullscreen = Screen.fullScreen;
-                            checkBoxObjects[2].SetActive(true);
-                            checkBoxObjects[3].SetActive(fullscreen);
-                            checkBoxSprites[2].spriteRenderer.sprite = Graphics.checkbox[2];
-                            checkBoxSprites[3].spriteRenderer.sprite = Graphics.checkbox[3];
-
-                            options[1].ChangeText("Fullscreen");
-                            options[2].ChangeText("Apply");
-                            options[3].ChangeText("Back");
-                            optionObjects[3].SetActive(true);
-                            options[selectedOption].SetSelected(false);
-                            selectedOption = 0;
-                            options[selectedOption].SetSelected(true);
-                            titleState = TitleState.Resolution;
-                            break;
-                        case 1:
-                            options[selectedOption].SetSelected(false);
-                            for (int i = 0; i < 3; i++) optionObjects[i].SetActive(false);
-                            keyMappingObject.SetActive(true);
-                            keyMapping.ResetPosition();
-                            logoObject.SetActive(false);
-                            versionObject.SetActive(false);
-                            titleState = TitleState.Controls;
-                            break;
-                        case 2:
-                            cancelSelected = true;
-                            break;
-                        default:
-                            Debug.LogWarning($"TitleScreen.Update: not implemented for option {selectedOption}");
-                            break;
-                    }
-                }
-                if (Keyboard.GetCancel() || cancelSelected)
-                {
-                    options[0].ChangeText("Start");
-                    options[1].ChangeText("Select level");
-                    options[2].ChangeText("Settings");
-                    options[selectedOption].SetSelected(false);
-                    for (int i = 0; i < buttonCount; i++)
-                    {
-                        optionObjects[i].SetActive(true);
-                    }
-                    selectedOption = 0;
-                    options[selectedOption].SetSelected(true);
-                    titleState = TitleState.MainMenu;
-                }
-                break;
-            case TitleState.Resolution:
-                for (int i = 0; i < 4; i++)
-                {
-                    if (options[i].Mouse.GetMouseEnter())
-                    {
-                        mouseDetected = true;
-                        switch (selectedOption)
-                        {
-                            case 0:
-                                arrowSprites[2].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == 0 ? 3 : 2];
-                                arrowSprites[3].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == (Screen.resolutions.Length - 1) ? 3 : 2];
-                                break;
-                            case 1:
-                                checkBoxSprites[2].spriteRenderer.sprite = Graphics.checkbox[2];
-                                checkBoxSprites[3].spriteRenderer.sprite = Graphics.checkbox[3];
-                                break;
-                        }
-                        options[selectedOption].SetSelected(false);
-                        selectedOption = i;
-                        options[selectedOption].SetSelected(true);
-                        switch (selectedOption)
-                        {
-                            case 0:
-                                arrowSprites[2].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == 0 ? 1 : 0];
-                                arrowSprites[3].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == (Screen.resolutions.Length - 1) ? 1 : 0];
-                                break;
-                            case 1:
-                                checkBoxSprites[2].spriteRenderer.sprite = Graphics.checkbox[0];
-                                checkBoxSprites[3].spriteRenderer.sprite = Graphics.checkbox[1];
-                                break;
-                        }
-                        break;
-                    }
-                }
-                if (mouseDetected) break;
-                if (selectedOption == 0 && (Keyboard.GetRight() || arrowSprites[3].Mouse.GetMouseClick()) &&
-                    resolutionIndex < Screen.resolutions.Length - 1)
-                {
-                    resolutionIndex++;
-                    SetResolutionText(resolutionIndex);
-                }
-                else if (selectedOption == 0 && (Keyboard.GetLeft() || arrowSprites[2].Mouse.GetMouseClick()) && resolutionIndex > 0)
-                {
-                    resolutionIndex--;
-                    SetResolutionText(resolutionIndex);
-                }
-                else if (Keyboard.GetDown())
-                {
-                    switch (selectedOption)
-                    {
-                        case 0:
-                            arrowSprites[2].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == 0 ? 3 : 2];
-                            arrowSprites[3].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == (Screen.resolutions.Length - 1) ? 3 : 2];
-                            checkBoxSprites[2].spriteRenderer.sprite = Graphics.checkbox[0];
-                            checkBoxSprites[3].spriteRenderer.sprite = Graphics.checkbox[1];
-                            break;
-                        case 1:
-                            checkBoxSprites[2].spriteRenderer.sprite = Graphics.checkbox[2];
-                            checkBoxSprites[3].spriteRenderer.sprite = Graphics.checkbox[3];
-                            break;
-                        case 3:
-                            arrowSprites[2].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == 0 ? 1 : 0];
-                            arrowSprites[3].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == (Screen.resolutions.Length - 1) ? 1 : 0];
-                            break;
-                    }
-                    options[selectedOption].SetSelected(false);
-                    selectedOption++;
-                    if (selectedOption >= 4) selectedOption = 0;
-                    options[selectedOption].SetSelected(true);
-                }
-                else if (Keyboard.GetUp())
-                {
-                    switch (selectedOption)
-                    {
-                        case 0:
-                            arrowSprites[2].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == 0 ? 3 : 2];
-                            arrowSprites[3].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == (Screen.resolutions.Length - 1) ? 3 : 2];
-                            break;
-                        case 1:
-                            arrowSprites[2].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == 0 ? 1 : 0];
-                            arrowSprites[3].spriteRenderer.sprite = Graphics.arrow[resolutionIndex == (Screen.resolutions.Length - 1) ? 1 : 0];
-                            checkBoxSprites[2].spriteRenderer.sprite = Graphics.checkbox[2];
-                            checkBoxSprites[3].spriteRenderer.sprite = Graphics.checkbox[3];
-                            break;
-                        case 2:
-                            checkBoxSprites[2].spriteRenderer.sprite = Graphics.checkbox[0];
-                            checkBoxSprites[3].spriteRenderer.sprite = Graphics.checkbox[1];
-                            break;
-                    }
-                    options[selectedOption].SetSelected(false);
-                    selectedOption--;
-                    if (selectedOption < 0) selectedOption = 3;
-                    options[selectedOption].SetSelected(true);
-                }
-                else if (Keyboard.GetSelect() || options[selectedOption].Mouse.GetMouseClick())
-                {
-                    switch (selectedOption)
-                    {
-                        case 0:
-                            // resolution
-                            break;
-                        case 1:
-                            fullscreen = !fullscreen;
-                            checkBoxObjects[3].SetActive(fullscreen);
-                            break;
-                        case 2:
-                            Graphics.SetResolution(Screen.resolutions[resolutionIndex].width,
-                                Screen.resolutions[resolutionIndex].height, fullscreen, Screen.resolutions[resolutionIndex].refreshRateRatio);
-                            break;
-                        case 3:
-                            cancelSelected = true;
-                            break;
-                        default:
-                            Debug.LogWarning($"TitleScreen.Update: not implemented for option {selectedOption}");
-                            break;
-                    }
-                }
-                if (Keyboard.GetCancel() || cancelSelected)
-                {
-                    options[0].ChangeText("Resolution");
-                    options[0].ChangeTextBoxSize(new Vector2(2.3f, .6f), true);
-                    arrowObjects[2].SetActive(false);
-                    arrowObjects[3].SetActive(false);
-                    checkBoxObjects[2].SetActive(false);
-                    options[1].ChangeText("Controls");
-                    options[2].ChangeText("Back");
-                    options[3].ChangeText("Credits");
-                    options[selectedOption].SetSelected(false);
-                    optionObjects[3].SetActive(false);
-                    selectedOption = 0;
-                    options[selectedOption].SetSelected(true);
-                    titleState = TitleState.Settings;
-                }
-                break;
-            case TitleState.Controls:
-                if (keyMapping.HandleInput())
-                {
-                    keyMappingObject.SetActive(false);
-                    for (int i = 0; i < 3; i++) optionObjects[i].SetActive(true);
-                    selectedOption = 0;
-                    options[selectedOption].SetSelected(true);
-                    logoObject.SetActive(true);
-                    versionObject.SetActive(true);
-                    titleState = TitleState.Settings;
-                }
-                break;
             case TitleState.Credits:
-                if (Keyboard.GetSelect() || options[3].Mouse.GetMouseClick() || Keyboard.GetCancel())
+                if (Keyboard.GetSelect() || options[2].Mouse.GetMouseClick() || Keyboard.GetCancel())
                 {
-                    options[3].ChangeText("Credits");
-                    optionObjects[3].transform.localPosition = new Vector3(OptionX, OptionYTop - OptionInterval * 3, 0);
+                    options[2].ChangeText("Credits");
+                    optionObjects[2].transform.localPosition = new Vector3(OptionX, OptionYTop - OptionInterval * 2, 0);
                     for (int i = 0; i < buttonCount; i++) optionObjects[i].SetActive(true);
                     creditsObject.SetActive(false);
                     titleState = TitleState.MainMenu;
@@ -588,14 +304,6 @@ public class TitleScreen : MonoBehaviour
         }
         arrowSprites[0].spriteRenderer.sprite = (level == 0 ? Graphics.arrow[1] : Graphics.arrow[0]);
         arrowSprites[1].spriteRenderer.sprite = (level == MainGame.LevelCount - 1 ? Graphics.arrow[1] : Graphics.arrow[0]);
-    }
-    private static void SetResolutionText(int index)
-    {
-        Resolution[] resolutions = Screen.resolutions;
-        options[0].ChangeText($"{resolutions[index].width} x {resolutions[index].height} " +
-            $"@ {resolutions[index].refreshRateRatio.value} Hz");
-        arrowSprites[2].spriteRenderer.sprite = Graphics.arrow[index == 0 ? 1 : 0];
-        arrowSprites[3].spriteRenderer.sprite = Graphics.arrow[index == (resolutions.Length - 1) ? 1 : 0];
     }
 
     // return the most probable level the player would play first
