@@ -4,10 +4,10 @@ latch: Latch
 makeo: Ring
 deform: Deform
 4x4: Gridle
-amalgam: Key Hole
 babystep: Baby Step
 mousetrap: Mouse Trap
 fork: Evolution
+amalgam: Key Hole
 realdelete: Missing Piece
 thankyou: Thank You
 
