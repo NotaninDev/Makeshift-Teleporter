@@ -106,11 +106,9 @@ public class TitleScreen : MonoBehaviour
 
         checkBoxObjects = new GameObject[4];
         checkBoxSprites = new SpriteBox[4];
-        checkBoxObjects[0] = General.AddChild(optionObjects[buttonCount], "Level Checkbox");
-        checkBoxObjects[1] = General.AddChild(checkBoxObjects[0], "Check Mark");
         checkBoxObjects[2] = General.AddChild(optionObjects[1], "Fullscreen Checkbox");
         checkBoxObjects[3] = General.AddChild(checkBoxObjects[2], "Check Mark");
-        for (int i = 0; i < 4; i++) checkBoxSprites[i] = checkBoxObjects[i].AddComponent<SpriteBox>();
+        for (int i = 2; i < 4; i++) checkBoxSprites[i] = checkBoxObjects[i].AddComponent<SpriteBox>();
     }
     void Start()
     {
@@ -158,12 +156,10 @@ public class TitleScreen : MonoBehaviour
 
         StartCoroutine(keyMapping.InitializeNonStatic());
 
-        for (int i = 0; i < 4; i++)
+        for (int i = 2; i < 4; i++)
         {
             checkBoxSprites[i].Initialize(Graphics.checkbox[i], "UI", i % 2 + 1, Vector3.zero);
         }
-        checkBoxObjects[0].transform.localScale = new Vector3(.88f, .88f, 1);
-        checkBoxObjects[1].transform.localScale = new Vector3(.71f, .71f, 1);
         checkBoxObjects[2].transform.localScale = new Vector3(.88f, .88f, 1);
         checkBoxObjects[3].transform.localScale = new Vector3(.71f, .71f, 1);
         checkBoxObjects[2].transform.localPosition = new Vector3(1.97f, 0, 0);
@@ -241,7 +237,6 @@ public class TitleScreen : MonoBehaviour
                             levelOption.SetSelected(true);
                             SetLevelName(level);
                             optionObjects[buttonCount].SetActive(true);
-                            checkBoxObjects[0].SetActive(true);
                             titleState = TitleState.LevelSelect;
                             break;
                         case 2:
@@ -297,8 +292,6 @@ public class TitleScreen : MonoBehaviour
                     options[1].SetSelected(true);
                     arrowSprites[0].spriteRenderer.sprite = (level == 0 ? Graphics.arrow[3] : Graphics.arrow[2]);
                     arrowSprites[1].spriteRenderer.sprite = (level == MainGame.LevelCount - 1 ? Graphics.arrow[3] : Graphics.arrow[2]);
-                    checkBoxSprites[0].spriteRenderer.sprite = Graphics.checkbox[2];
-                    checkBoxSprites[1].spriteRenderer.sprite = Graphics.checkbox[3];
                 }
                 else if (selectedOption == 1 && (Keyboard.GetDown() || Keyboard.GetUp()) || levelOption.Mouse.GetMouseEnter())
                 {
@@ -307,8 +300,6 @@ public class TitleScreen : MonoBehaviour
                     options[1].SetSelected(false);
                     arrowSprites[0].spriteRenderer.sprite = (level == 0 ? Graphics.arrow[1] : Graphics.arrow[0]);
                     arrowSprites[1].spriteRenderer.sprite = (level == MainGame.LevelCount - 1 ? Graphics.arrow[1] : Graphics.arrow[0]);
-                    checkBoxSprites[0].spriteRenderer.sprite = Graphics.checkbox[0];
-                    checkBoxSprites[1].spriteRenderer.sprite = Graphics.checkbox[1];
                 }
                 else if ((Keyboard.GetSelect() || options[1].Mouse.GetMouseClick()) && selectedOption == 1 || Keyboard.GetCancel())
                 {
@@ -595,8 +586,6 @@ public class TitleScreen : MonoBehaviour
         {
             arrowObjects[i].transform.localPosition = new Vector3(.12f * (i * 2 - 1), -.70f, 0);
         }
-        checkBoxObjects[0].transform.localPosition = new Vector3(-levelOption.Size.x * 1.25f / 2 - .45f, 0, 0);
-        checkBoxObjects[1].SetActive(General.Progress.Contains(MapData.GetLevelTag(level)));
         arrowSprites[0].spriteRenderer.sprite = (level == 0 ? Graphics.arrow[1] : Graphics.arrow[0]);
         arrowSprites[1].spriteRenderer.sprite = (level == MainGame.LevelCount - 1 ? Graphics.arrow[1] : Graphics.arrow[0]);
     }

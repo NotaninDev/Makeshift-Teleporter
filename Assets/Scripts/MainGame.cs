@@ -365,7 +365,6 @@ public class MainGame : MonoBehaviour
 
     private IEnumerator EndGame()
     {
-        General.AddSolvedLevel(levelTag);
         if (skip) yield return new WaitForSeconds(0);
         else yield return new WaitForSeconds(.8f);
         level++;

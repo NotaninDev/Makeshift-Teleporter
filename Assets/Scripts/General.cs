@@ -10,8 +10,6 @@ public class General : MonoBehaviour
 {
     public static Random rand;
 
-    // Progress is a list of level tags of all solved puzzles
-    public static List<string> Progress { get; private set; }
     public static string LastPlayedLevel { get; private set; }
 
     void Awake()
@@ -19,11 +17,7 @@ public class General : MonoBehaviour
         rand = new Random();
         MapData.LoadLevelNames();
 
-        List<string> progress;
-        string lastPlayedLevel;
-        SaveFile.LoadProgress(out progress, out lastPlayedLevel);
-        Progress = progress;
-        LastPlayedLevel = lastPlayedLevel;
+        LastPlayedLevel = string.Empty;
     }
 
     public static GameObject AddChild(GameObject parent, string name = null)
@@ -89,21 +83,11 @@ public class General : MonoBehaviour
         unityEvent.Invoke();
     }
 
-    public static void AddSolvedLevel(string tag)
-    {
-        if (!Progress.Contains(tag))
-        {
-            Progress.Add(tag);
-            SaveFile.SaveProgress(Progress, LastPlayedLevel);
-        }
-    }
-
     public static void UpdateLastPlayedLevel(string tag)
     {
         if (LastPlayedLevel != tag)
         {
             LastPlayedLevel = tag;
-            SaveFile.SaveProgress(Progress, LastPlayedLevel);
         }
     }
 }
