@@ -4,6 +4,7 @@ latch: Latch
 makeo: Ring
 deform: Deform
 4x4: Gridle
+sculpture: Sculpture
 babystep: Baby Step
 mousetrap: Mouse Trap
 fork: Evolution
