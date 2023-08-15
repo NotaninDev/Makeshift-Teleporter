@@ -15,6 +15,7 @@ thankyou: Thank You
 // debug levels
 pocket: Pocket (not unique)
 pocket2: Pockets unused
+notopen: Stopper
 debugtele: Debug Teleport
 debug: Debug
 debugalpha: Debug Alpha
